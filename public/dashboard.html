@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — WebIntel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a28;--bg4:#222236;
+  --text:#e4e4ef;--text2:#9494a8;--text3:#6a6a80;
+  --accent:#22d3ee;--accent2:#06b6d4;
+  --green:#34d399;--green-glow:rgba(52,211,153,0.12);
+  --amber:#fbbf24;--amber-glow:rgba(251,191,36,0.10);
+  --coral:#fb7185;
+  --border:rgba(148,148,168,0.12);--border2:rgba(148,148,168,0.06);
+  --mono:'JetBrains Mono',monospace;--sans:'DM Sans',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased;min-height:100vh}
+
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(148,148,168,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(148,148,168,0.03) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+
+/* Nav */
+nav{position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+nav .inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px}
+.nav-logo{font-family:var(--mono);font-weight:700;font-size:18px;color:var(--text);text-decoration:none;letter-spacing:-0.5px}
+.nav-logo span{color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.nav-email{font-size:13px;color:var(--text2);font-family:var(--mono)}
+.btn-sm{font-family:var(--mono);font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;transition:all 0.2s}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Layout */
+.container{max-width:960px;margin:0 auto;padding:40px 24px;position:relative;z-index:1}
+
+/* Login screen */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 64px)}
+.login-card{text-align:center;max-width:400px;width:100%;padding:48px 32px;background:var(--bg2);border:1px solid var(--border);border-radius:16px}
+.login-card h1{font-size:24px;margin-bottom:8px}
+.login-card p{font-size:14px;color:var(--text2);margin-bottom:28px;line-height:1.6}
+.login-input{width:100%;padding:12px 16px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-family:var(--sans);outline:none;transition:border-color 0.2s;margin-bottom:12px}
+.login-input:focus{border-color:var(--accent)}
+.btn-full{width:100%;padding:14px;border-radius:10px;background:var(--accent);color:var(--bg);font-weight:700;font-size:14px;border:none;cursor:pointer;font-family:var(--sans);transition:all 0.2s}
+.btn-full:hover{background:#67e8f9;transform:translateY(-1px)}
+.btn-full:disabled{opacity:0.5;cursor:not-allowed}
+.login-msg{margin-top:16px;padding:12px;border-radius:8px;font-size:13px;display:none}
+.login-msg.success{display:block;background:var(--green-glow);border:1px solid rgba(52,211,153,0.25);color:var(--green)}
+.login-msg.error{display:block;background:rgba(251,113,133,0.08);border:1px solid rgba(251,113,133,0.2);color:var(--coral)}
+
+/* Dashboard */
+.dash{display:none}
+.dash.visible{display:block}
+
+.section-title{font-size:28px;font-weight:700;letter-spacing:-1px;margin-bottom:8px}
+.section-desc{font-size:14px;color:var(--text2);margin-bottom:32px}
+
+/* Plan banner */
+.plan-banner{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;margin-bottom:32px;flex-wrap:wrap;gap:12px}
+.plan-info{display:flex;align-items:center;gap:12px}
+.plan-badge{font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 12px;border-radius:6px;letter-spacing:1px;text-transform:uppercase}
+.plan-badge.free{background:var(--green-glow);color:var(--green);border:1px solid rgba(52,211,153,0.2)}
+.plan-badge.paid{background:rgba(34,211,238,0.12);color:var(--accent);border:1px solid rgba(34,211,238,0.2)}
+.plan-text{font-size:14px;color:var(--text2)}
+.btn-accent{font-family:var(--sans);font-size:13px;padding:10px 20px;border-radius:8px;background:var(--accent);color:var(--bg);font-weight:700;border:none;cursor:pointer;transition:all 0.2s}
+.btn-accent:hover{background:#67e8f9;transform:translateY(-1px)}
+.btn-outline{font-family:var(--sans);font-size:13px;padding:10px 20px;border-radius:8px;background:transparent;color:var(--text);font-weight:500;border:1px solid var(--border);cursor:pointer;transition:all 0.2s}
+.btn-outline:hover{border-color:var(--text3)}
+
+/* Keys list */
+.keys-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.keys-header h2{font-size:18px;font-weight:700}
+
+.key-card{display:flex;align-items:center;gap:12px;padding:16px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;flex-wrap:wrap}
+.key-value{font-family:var(--mono);font-size:13px;color:var(--accent);flex:1;word-break:break-all;min-width:200px}
+.key-meta{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.key-tier{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:0.5px}
+.key-tier.free{background:var(--green-glow);color:var(--green)}
+.key-tier.paid{background:rgba(34,211,238,0.12);color:var(--accent)}
+.key-date{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.key-actions{display:flex;gap:6px}
+.key-copy,.key-revoke{font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--text3);cursor:pointer;transition:all 0.2s}
+.key-copy:hover{border-color:var(--accent);color:var(--accent)}
+.key-revoke:hover{border-color:var(--coral);color:var(--coral)}
+
+.empty-state{text-align:center;padding:40px;color:var(--text3);font-size:14px}
+
+/* Quick start */
+.quickstart{margin-top:40px;padding:24px;background:var(--bg2);border:1px solid var(--border);border-radius:12px}
+.quickstart h3{font-size:16px;font-weight:700;margin-bottom:12px}
+.quickstart pre{background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:16px;font-family:var(--mono);font-size:12px;line-height:1.8;overflow-x:auto;color:var(--text2)}
+.quickstart .hl-cmd{color:var(--amber)}
+.quickstart .hl-flag{color:var(--accent)}
+.quickstart .hl-str{color:var(--green)}
+
+@media(max-width:600px){
+  .plan-banner{flex-direction:column;align-items:flex-start}
+  .key-card{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="/" class="nav-logo">web<span>intel</span></a>
+    <div class="nav-right" id="nav-right" style="display:none">
+      <span class="nav-email" id="nav-email"></span>
+      <button class="btn-sm" onclick="handleLogout()">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Login screen -->
+<div id="login-screen" class="login-wrap">
+  <div class="login-card">
+    <h1>Sign in to your dashboard</h1>
+    <p>Enter your email and we'll send you a magic link. No password needed.</p>
+    <input type="email" id="login-email" class="login-input" placeholder="you@company.com" onkeydown="if(event.key==='Enter')sendMagicLink()">
+    <button class="btn-full" id="login-btn" onclick="sendMagicLink()">Send magic link</button>
+    <div class="login-msg" id="login-msg"></div>
+  </div>
+</div>
+
+<!-- Dashboard (hidden until authenticated) -->
+<div id="dashboard" class="container dash">
+  <h1 class="section-title">Dashboard</h1>
+  <p class="section-desc" id="dash-subtitle">Manage your API keys and subscription.</p>
+
+  <!-- Plan banner -->
+  <div class="plan-banner" id="plan-banner">
+    <div class="plan-info">
+      <span class="plan-badge free" id="plan-badge">FREE</span>
+      <span class="plan-text" id="plan-text">100 requests/day</span>
+    </div>
+    <div id="plan-actions"></div>
+  </div>
+
+  <!-- API Keys -->
+  <div class="keys-header">
+    <h2>API Keys</h2>
+    <button class="btn-sm" id="create-key-btn" onclick="handleCreateKey()">+ New key</button>
+  </div>
+  <div id="keys-list"></div>
+
+  <!-- Quick start -->
+  <div class="quickstart" id="quickstart">
+    <h3>Quick start</h3>
+    <pre id="quickstart-code"></pre>
+  </div>
+</div>
+
+<script>
+const API_BASE = window.location.origin;
+let dashData = null;
+
+// -------------------------------------------------------
+// Boot: check if already signed in
+// -------------------------------------------------------
+(async function boot() {
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' });
+    if (res.ok) {
+      const { user } = await res.json();
+      await loadDashboard(user);
+    }
+  } catch {}
+})();
+
+// -------------------------------------------------------
+// Magic link login
+// -------------------------------------------------------
+async function sendMagicLink() {
+  const email = document.getElementById('login-email').value.trim();
+  const msg = document.getElementById('login-msg');
+  const btn = document.getElementById('login-btn');
+
+  msg.className = 'login-msg';
+  msg.style.display = 'none';
+
+  if (!email || !email.includes('@')) {
+    msg.textContent = 'Enter a valid email address.';
+    msg.className = 'login-msg error';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/magic-link`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const json = await res.json();
+
+    if (res.ok) {
+      msg.textContent = 'Check your email for a sign-in link. It expires in 15 minutes.';
+      msg.className = 'login-msg success';
+    } else {
+      msg.textContent = json.message || 'Something went wrong.';
+      msg.className = 'login-msg error';
+    }
+  } catch (err) {
+    msg.textContent = 'Network error: ' + err.message;
+    msg.className = 'login-msg error';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send magic link';
+  }
+}
+
+// -------------------------------------------------------
+// Load dashboard
+// -------------------------------------------------------
+async function loadDashboard(user) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').classList.add('visible');
+  document.getElementById('nav-right').style.display = 'flex';
+  document.getElementById('nav-email').textContent = user.email;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/dashboard`, { credentials: 'include' });
+    if (!res.ok) throw new Error('Failed to load');
+    const json = await res.json();
+    dashData = json.data;
+    renderDashboard();
+  } catch (err) {
+    document.getElementById('keys-list').innerHTML =
+      '<div class="empty-state">Could not load dashboard data. Try refreshing.</div>';
+  }
+}
+
+function renderDashboard() {
+  const { tier, keys, subscription, hasStripeAccount } = dashData;
+
+  // Plan badge
+  const badge = document.getElementById('plan-badge');
+  badge.textContent = tier === 'paid' ? 'PRO' : 'FREE';
+  badge.className = `plan-badge ${tier === 'paid' ? 'paid' : 'free'}`;
+
+  const planText = document.getElementById('plan-text');
+  planText.textContent = tier === 'paid' ? '5,000 requests/day' : '100 requests/day';
+
+  if (subscription?.currentPeriodEnd) {
+    const end = new Date(subscription.currentPeriodEnd);
+    planText.textContent += ` · renews ${end.toLocaleDateString()}`;
+  }
+
+  // Plan actions
+  const actions = document.getElementById('plan-actions');
+  if (tier === 'paid' && hasStripeAccount) {
+    actions.innerHTML = '<button class="btn-outline" onclick="openPortal()">Manage subscription</button>';
+  } else if (tier === 'free') {
+    actions.innerHTML = '<button class="btn-accent" onclick="upgradeToPro()">Upgrade to Pro — $9/mo</button>';
+  }
+
+  // Keys
+  const list = document.getElementById('keys-list');
+  const activeKeys = keys.filter(k => k.active);
+
+  if (activeKeys.length === 0) {
+    list.innerHTML = '<div class="empty-state">No API keys yet. Click "+ New key" to create one.</div>';
+  } else {
+    list.innerHTML = activeKeys.map(k => `
+      <div class="key-card" id="key-${k.id}">
+        <div class="key-value">${k.key}</div>
+        <div class="key-meta">
+          <span class="key-tier ${k.tier}">${k.tier}</span>
+          <span class="key-date">${new Date(k.createdAt).toLocaleDateString()}</span>
+          <div class="key-actions">
+            <button class="key-copy" onclick="copyToClipboard('${k.key}', this)">Copy</button>
+            <button class="key-revoke" onclick="handleRevoke(${k.id})">Revoke</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Quickstart with first active key
+  const firstKey = activeKeys[0]?.key || 'YOUR_API_KEY';
+  document.getElementById('quickstart-code').innerHTML =
+    `<span class="hl-cmd">curl</span> ${API_BASE}/v1/preview \\
+  <span class="hl-flag">-H</span> <span class="hl-str">"x-api-key: ${firstKey}"</span> \\
+  <span class="hl-flag">-G -d</span> <span class="hl-str">"url=https://github.com"</span>`;
+}
+
+// -------------------------------------------------------
+// Key actions
+// -------------------------------------------------------
+async function handleCreateKey() {
+  const btn = document.getElementById('create-key-btn');
+  btn.disabled = true;
+  btn.textContent = 'Creating...';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/dashboard/keys`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+    const json = await res.json();
+
+    if (res.ok) {
+      dashData.keys.unshift(json.data);
+      renderDashboard();
+    } else {
+      alert(json.message || 'Could not create key.');
+    }
+  } catch (err) {
+    alert('Network error: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '+ New key';
+  }
+}
+
+async function handleRevoke(keyId) {
+  if (!confirm('Revoke this key? Any apps using it will stop working.')) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/dashboard/keys/${keyId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+
+    if (res.ok) {
+      dashData.keys = dashData.keys.map(k =>
+        k.id === keyId ? { ...k, active: false } : k
+      );
+      renderDashboard();
+    } else {
+      const json = await res.json();
+      alert(json.message || 'Could not revoke key.');
+    }
+  } catch (err) {
+    alert('Network error: ' + err.message);
+  }
+}
+
+// -------------------------------------------------------
+// Billing
+// -------------------------------------------------------
+async function upgradeToPro() {
+  try {
+    const res = await fetch(`${API_BASE}/api/billing/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email: dashData.email }),
+    });
+    const json = await res.json();
+    if (json.url) {
+      window.location.href = json.url;
+    } else {
+      alert(json.message || 'Could not start checkout.');
+    }
+  } catch (err) {
+    alert('Network error: ' + err.message);
+  }
+}
+
+async function openPortal() {
+  try {
+    const res = await fetch(`${API_BASE}/api/billing/portal`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email: dashData.email }),
+    });
+    const json = await res.json();
+    if (json.url) {
+      window.location.href = json.url;
+    } else {
+      alert(json.message || 'Could not open billing portal.');
+    }
+  } catch (err) {
+    alert('Network error: ' + err.message);
+  }
+}
+
+// -------------------------------------------------------
+// Utils
+// -------------------------------------------------------
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text);
+  const orig = btn.textContent;
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = orig, 1500);
+}
+
+async function handleLogout() {
+  await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+  window.location.reload();
+}
+</script>
+</body>
+</html>
