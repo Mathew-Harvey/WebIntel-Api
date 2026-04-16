@@ -35,7 +35,6 @@
 html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased}
 
-/* --- Grid background --- */
 body::before{
   content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background-image:
@@ -44,7 +43,6 @@ body::before{
   background-size:60px 60px;
 }
 
-/* --- Glow orbs --- */
 .glow-orb{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
 .glow-1{width:500px;height:500px;background:rgba(34,211,238,0.06);top:-200px;left:-100px}
 .glow-2{width:400px;height:400px;background:rgba(167,139,250,0.05);top:200px;right:-100px}
@@ -127,6 +125,7 @@ nav .container{display:flex;align-items:center;justify-content:space-between;hei
   padding:4px 12px;border-radius:6px;cursor:pointer;transition:all 0.2s;
   border:none;background:none;
 }
+.code-tab:first-of-type{margin-left:16px}
 .code-tab.active{background:var(--bg3);color:var(--accent)}
 .code-body{padding:20px;font-family:var(--mono);font-size:13px;line-height:1.8;overflow-x:auto;min-height:180px}
 .code-body .comment{color:var(--text3)}
@@ -207,6 +206,136 @@ nav .container{display:flex;align-items:center;justify-content:space-between;hei
   color:var(--text2);overflow-x:auto;
 }
 
+/* --- Playground --- */
+.playground{padding:100px 0;border-top:1px solid var(--border)}
+.pg-container{
+  background:var(--bg2);border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;margin-top:48px;
+}
+.pg-top{display:flex;gap:0;border-bottom:1px solid var(--border)}
+.pg-controls{flex:1;padding:28px;border-right:1px solid var(--border);min-width:0}
+.pg-code-panel{flex:1;padding:0;min-width:0;display:flex;flex-direction:column}
+.pg-code-header{
+  display:flex;align-items:center;gap:12px;padding:12px 20px;
+  border-bottom:1px solid var(--border);background:var(--bg3);
+}
+.pg-code-header span{font-family:var(--mono);font-size:12px;color:var(--text3)}
+.pg-code-copy{
+  margin-left:auto;background:none;border:1px solid var(--border);
+  color:var(--text3);font-family:var(--mono);font-size:11px;
+  padding:4px 10px;border-radius:6px;cursor:pointer;transition:all 0.2s;
+}
+.pg-code-copy:hover{border-color:var(--accent);color:var(--accent)}
+.pg-code-body{
+  flex:1;padding:20px;font-family:var(--mono);font-size:12px;line-height:1.8;
+  color:var(--text2);overflow-x:auto;white-space:pre;min-height:200px;
+  background:var(--bg);
+}
+@media(max-width:900px){
+  .pg-top{flex-direction:column}
+  .pg-controls{border-right:none;border-bottom:1px solid var(--border)}
+}
+
+.pg-label{
+  display:block;font-family:var(--mono);font-size:11px;color:var(--text3);
+  letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;
+}
+.pg-label:not(:first-child){margin-top:20px}
+.pg-input{
+  width:100%;padding:10px 14px;border-radius:8px;border:1px solid var(--border);
+  background:var(--bg);color:var(--text);font-size:14px;font-family:var(--sans);
+  outline:none;transition:border-color 0.2s;
+}
+.pg-input:focus{border-color:var(--accent)}
+.pg-input::placeholder{color:var(--text3)}
+
+.pg-select-row{display:flex;gap:8px;flex-wrap:wrap}
+.pg-chip{
+  font-family:var(--mono);font-size:12px;padding:6px 14px;border-radius:8px;
+  border:1px solid var(--border);background:var(--bg);color:var(--text3);
+  cursor:pointer;transition:all 0.2s;
+}
+.pg-chip.active{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+.pg-chip:hover:not(.active){border-color:var(--text3);color:var(--text2)}
+
+.pg-opts{display:flex;gap:16px;flex-wrap:wrap;margin-top:4px}
+.pg-toggle{display:flex;align-items:center;gap:8px;cursor:pointer}
+.pg-toggle input{display:none}
+.pg-toggle .track{
+  width:34px;height:18px;border-radius:10px;background:var(--bg4);
+  position:relative;transition:background 0.2s;border:1px solid var(--border);
+}
+.pg-toggle input:checked+.track{background:var(--accent);border-color:var(--accent)}
+.pg-toggle .track::after{
+  content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;
+  border-radius:50%;background:var(--text);transition:transform 0.2s;
+}
+.pg-toggle input:checked+.track::after{transform:translateX(16px)}
+.pg-toggle span{font-size:12px;color:var(--text3);font-family:var(--mono)}
+
+.pg-run{
+  margin-top:24px;width:100%;padding:12px;border-radius:10px;
+  background:var(--accent);color:var(--bg);font-weight:700;font-size:14px;
+  border:none;cursor:pointer;font-family:var(--sans);transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.pg-run:hover:not(:disabled){background:#67e8f9;transform:translateY(-1px)}
+.pg-run:disabled{opacity:0.5;cursor:not-allowed}
+.pg-run .spinner{
+  display:none;width:16px;height:16px;border:2px solid rgba(10,10,15,0.3);
+  border-top-color:var(--bg);border-radius:50%;animation:spin 0.6s linear infinite;
+}
+.pg-run.loading .spinner{display:block}
+.pg-run.loading .run-text{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Playground results */
+.pg-results{
+  border-top:1px solid var(--border);padding:28px;
+  display:none;
+}
+.pg-results.visible{display:block}
+.pg-results-header{
+  display:flex;align-items:center;gap:12px;margin-bottom:20px;
+}
+.pg-results-badge{
+  font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:6px;
+  font-weight:700;letter-spacing:0.5px;
+}
+.pg-results-badge.success{background:var(--green-glow);color:var(--green);border:1px solid rgba(52,211,153,0.2)}
+.pg-results-badge.error{background:rgba(251,113,133,0.1);color:var(--coral);border:1px solid rgba(251,113,133,0.2)}
+.pg-results-time{font-family:var(--mono);font-size:11px;color:var(--text3)}
+
+.pg-meta-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+}
+@media(max-width:600px){.pg-meta-grid{grid-template-columns:1fr}}
+.pg-meta-item{
+  background:var(--bg);border:1px solid var(--border2);border-radius:8px;
+  padding:12px;overflow:hidden;
+}
+.pg-meta-key{
+  font-family:var(--mono);font-size:10px;color:var(--text3);
+  letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;
+}
+.pg-meta-val{
+  font-size:13px;color:var(--text);word-break:break-word;
+  max-height:60px;overflow:hidden;text-overflow:ellipsis;
+}
+.pg-meta-val a{color:var(--accent);text-decoration:none}
+.pg-meta-val a:hover{text-decoration:underline}
+.pg-meta-val img{max-width:100%;height:auto;border-radius:4px;margin-top:4px}
+
+.pg-screenshot-result{text-align:center}
+.pg-screenshot-result img{
+  max-width:100%;height:auto;border-radius:8px;
+  border:1px solid var(--border);
+}
+.pg-error-msg{
+  background:rgba(251,113,133,0.06);border:1px solid rgba(251,113,133,0.15);
+  border-radius:8px;padding:16px;color:var(--coral);font-size:14px;
+}
+
 /* --- Pricing --- */
 .pricing{padding:100px 0;border-top:1px solid var(--border)}
 .pricing-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:48px}
@@ -248,6 +377,47 @@ nav .container{display:flex;align-items:center;justify-content:space-between;hei
 .price-btn-enterprise{background:transparent;color:var(--text);border:1px solid var(--border)}
 .price-btn-enterprise:hover{border-color:var(--text3)}
 
+/* --- Signup section --- */
+.signup-section{padding:100px 0}
+.signup-form-wrap{max-width:480px;margin:0 auto}
+.signup-row{display:flex;gap:12px}
+.signup-msg{
+  margin-top:16px;padding:14px 18px;border-radius:10px;font-size:14px;
+  display:none;text-align:left;
+}
+.signup-msg.success{
+  display:block;background:var(--green-glow);border:1px solid rgba(52,211,153,0.25);color:var(--green);
+}
+.signup-msg.error{
+  display:block;background:rgba(251,113,133,0.08);border:1px solid rgba(251,113,133,0.2);color:var(--coral);
+}
+.signup-key-display{
+  margin-top:12px;padding:14px 18px;border-radius:10px;
+  background:var(--bg3);border:1px solid var(--border);
+  display:none;text-align:left;
+}
+.signup-key-display.visible{display:block}
+.signup-key-display .key-label{
+  font-family:var(--mono);font-size:10px;color:var(--text3);
+  letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;
+}
+.signup-key-display code{
+  display:block;font-family:var(--mono);font-size:14px;font-weight:700;
+  color:var(--accent);word-break:break-all;
+}
+.signup-key-display .key-hint{
+  font-size:12px;color:var(--text3);margin-top:8px;
+}
+.signup-key-display .key-actions{display:flex;gap:8px;margin-top:12px}
+.key-action-btn{
+  font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:6px;
+  border:1px solid var(--border);background:var(--bg);color:var(--text2);
+  cursor:pointer;transition:all 0.2s;
+}
+.key-action-btn:hover{border-color:var(--accent);color:var(--accent)}
+.key-action-btn.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.key-action-btn.primary:hover{background:#67e8f9}
+
 /* --- Footer --- */
 footer{padding:60px 0;border-top:1px solid var(--border)}
 .footer-grid{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:40px}
@@ -271,7 +441,6 @@ footer{padding:60px 0;border-top:1px solid var(--border)}
 </head>
 <body>
 
-<!-- Background glow -->
 <div class="glow-orb glow-1"></div>
 <div class="glow-orb glow-2"></div>
 <div class="glow-orb glow-3"></div>
@@ -281,9 +450,11 @@ footer{padding:60px 0;border-top:1px solid var(--border)}
   <div class="container">
     <a href="#" class="nav-logo">web<span>intel</span></a>
     <div class="nav-links">
+      <a href="#playground">Playground</a>
       <a href="#endpoints">Endpoints</a>
       <a href="#pricing">Pricing</a>
       <a href="#docs">Docs</a>
+      <a href="/dashboard.html" class="nav-cta" style="background:transparent;color:var(--text2);border:none;padding:8px 12px">Dashboard</a>
       <a href="#signup" class="nav-cta">Get API Key</a>
     </div>
   </div>
@@ -299,7 +470,7 @@ footer{padding:60px 0;border-top:1px solid var(--border)}
     <p class="fade-up stagger-2">Extract Open Graph metadata and capture screenshots from any URL. Built for developers, AI agents, and LLMs. Ship in minutes, not weeks.</p>
     <div class="hero-actions fade-up stagger-3">
       <a href="#signup" class="btn-primary" id="hero-cta">Start free — 100 requests/day</a>
-      <a href="#endpoints" class="btn-secondary">View endpoints</a>
+      <a href="#playground" class="btn-secondary">Try the playground</a>
     </div>
 
     <!-- Code demo -->
@@ -307,10 +478,10 @@ footer{padding:60px 0;border-top:1px solid var(--border)}
       <div class="code-window">
         <div class="code-header">
           <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
-          <button class="code-tab active" data-tab="curl" onclick="showTab('curl')">cURL</button>
-          <button class="code-tab" data-tab="js" onclick="showTab('js')">JavaScript</button>
-          <button class="code-tab" data-tab="python" onclick="showTab('python')">Python</button>
-          <button class="code-tab" data-tab="mcp" onclick="showTab('mcp')">MCP</button>
+          <button class="code-tab active" onclick="showTab('curl')">cURL</button>
+          <button class="code-tab" onclick="showTab('js')">JavaScript</button>
+          <button class="code-tab" onclick="showTab('python')">Python</button>
+          <button class="code-tab" onclick="showTab('mcp')">MCP</button>
         </div>
         <div class="code-body">
           <pre id="code-curl"><span class="comment"># Get link preview metadata</span>
@@ -360,6 +531,66 @@ data = res.<span class="method">json</span>()[<span class="string">"data"</span>
 <span class="comment">// and take_screenshot as tools</span></pre>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive Playground -->
+<section class="playground" id="playground">
+  <div class="container">
+    <div class="section-label fade-up">Playground</div>
+    <h2 class="section-title fade-up">Try it live — no setup required</h2>
+    <p class="section-desc fade-up">Enter a URL, pick an endpoint, and hit run. See the API response in real time with generated code you can copy.</p>
+
+    <div class="pg-container fade-up stagger-1">
+      <div class="pg-top">
+        <!-- Controls -->
+        <div class="pg-controls">
+          <label class="pg-label">API Key</label>
+          <input type="text" class="pg-input" id="pg-apikey" placeholder="Sign up below to get a key" readonly style="cursor:pointer;opacity:0.7" onclick="document.getElementById('signup').scrollIntoView({behavior:'smooth'})">
+
+          <label class="pg-label">Endpoint</label>
+          <div class="pg-select-row" id="pg-endpoint-row">
+            <button class="pg-chip active" data-ep="preview" onclick="pgSetEndpoint('preview')">Link Preview</button>
+            <button class="pg-chip" data-ep="screenshot" onclick="pgSetEndpoint('screenshot')">Screenshot</button>
+          </div>
+
+          <label class="pg-label">URL to inspect</label>
+          <input type="text" class="pg-input" id="pg-url" placeholder="https://github.com" value="https://github.com">
+
+          <!-- Screenshot options (hidden by default) -->
+          <div id="pg-ss-opts" style="display:none">
+            <label class="pg-label">Format</label>
+            <div class="pg-select-row" id="pg-format-row">
+              <button class="pg-chip active" data-fmt="png" onclick="pgSetFormat('png')">PNG</button>
+              <button class="pg-chip" data-fmt="jpeg" onclick="pgSetFormat('jpeg')">JPEG</button>
+              <button class="pg-chip" data-fmt="webp" onclick="pgSetFormat('webp')">WebP</button>
+            </div>
+            <label class="pg-label">Options</label>
+            <div class="pg-opts">
+              <label class="pg-toggle"><input type="checkbox" id="pg-fullpage"><div class="track"></div><span>Full page</span></label>
+              <label class="pg-toggle"><input type="checkbox" id="pg-darkmode"><div class="track"></div><span>Dark mode</span></label>
+            </div>
+          </div>
+
+          <button class="pg-run" id="pg-run-btn" onclick="pgRun()">
+            <div class="spinner"></div>
+            <span class="run-text">Run request</span>
+          </button>
+        </div>
+
+        <!-- Live code preview -->
+        <div class="pg-code-panel">
+          <div class="pg-code-header">
+            <span>Generated code</span>
+            <button class="pg-code-copy" onclick="pgCopyCode(event)">Copy</button>
+          </div>
+          <div class="pg-code-body" id="pg-code-output"></div>
+        </div>
+      </div>
+
+      <!-- Results panel -->
+      <div class="pg-results" id="pg-results"></div>
     </div>
   </div>
 </section>
@@ -458,7 +689,6 @@ data = res.<span class="method">json</span>()[<span class="string">"data"</span>
     <h2 class="section-title fade-up">Start free. Scale when you need to.</h2>
     <p class="section-desc fade-up">Simple, predictable pricing. No hidden fees. No per-endpoint charges. Every plan includes both endpoints.</p>
     <div class="pricing-grid">
-      <!-- Free -->
       <div class="price-card fade-up">
         <div class="price-tier">Free</div>
         <div class="price-amount">$0 <span>/month</span></div>
@@ -470,9 +700,8 @@ data = res.<span class="method">json</span>()[<span class="string">"data"</span>
           <li>Community support</li>
           <li>Rate limit headers</li>
         </ul>
-        <button class="price-btn price-btn-free" onclick="handleSignup('free')">Get free API key</button>
+        <button class="price-btn price-btn-free" onclick="document.getElementById('signup').scrollIntoView({behavior:'smooth'})">Get free API key</button>
       </div>
-      <!-- Pro -->
       <div class="price-card featured fade-up stagger-1">
         <div class="price-tier">Pro</div>
         <div class="price-amount">$9 <span>/month</span></div>
@@ -487,7 +716,6 @@ data = res.<span class="method">json</span>()[<span class="string">"data"</span>
         </ul>
         <button class="price-btn price-btn-paid" onclick="handleCheckout('pro')">Subscribe with Stripe</button>
       </div>
-      <!-- Enterprise -->
       <div class="price-card fade-up stagger-2">
         <div class="price-tier">Enterprise</div>
         <div class="price-amount">Custom</div>
@@ -507,19 +735,27 @@ data = res.<span class="method">json</span>()[<span class="string">"data"</span>
 </section>
 
 <!-- Signup / CTA -->
-<section id="signup" style="padding:100px 0">
+<section id="signup" class="signup-section">
   <div class="container" style="text-align:center">
     <h2 class="section-title fade-up">Get your API key in 30 seconds</h2>
-    <p class="section-desc fade-up" style="margin:0 auto 40px">No credit card required for the free tier. Start building today.</p>
-    <div class="fade-up stagger-1" style="max-width:480px;margin:0 auto">
-      <div style="display:flex;gap:12px">
+    <p class="section-desc fade-up" style="margin:0 auto 40px">No credit card required for the free tier. Key sent to your inbox via email.</p>
+    <div class="fade-up stagger-1 signup-form-wrap">
+      <div class="signup-row">
         <input type="email" id="signup-email" placeholder="you@company.com"
-          style="flex:1;padding:14px 18px;border-radius:10px;border:1px solid var(--border);
-          background:var(--bg2);color:var(--text);font-size:15px;font-family:var(--sans);
-          outline:none;transition:border-color 0.2s"
+          class="pg-input" style="flex:1"
           onfocus="this.style.borderColor='var(--accent)'"
           onblur="this.style.borderColor='var(--border)'">
-        <button class="btn-primary" onclick="handleSignup('free')" style="white-space:nowrap">Get API Key</button>
+        <button class="btn-primary" id="signup-btn" onclick="handleSignup('free')" style="white-space:nowrap">Get API Key</button>
+      </div>
+      <div class="signup-msg" id="signup-msg"></div>
+      <div class="signup-key-display" id="signup-key-display">
+        <div class="key-label">Your API Key</div>
+        <code id="signup-key-value"></code>
+        <div class="key-hint">This key has been emailed to you. Store it safely — it won't be shown again.</div>
+        <div class="key-actions">
+          <button class="key-action-btn" onclick="copyKey(event)">Copy key</button>
+          <button class="key-action-btn primary" onclick="useKeyInPlayground()">Use in playground</button>
+        </div>
       </div>
       <p style="font-size:12px;color:var(--text3);margin-top:12px">
         By signing up you agree to our <a href="#" style="color:var(--text2)">Terms of Service</a>
@@ -567,104 +803,373 @@ data = res.<span class="method">json</span>()[<span class="string">"data"</span>
 </footer>
 
 <script>
-// --- Code tab switcher ---
+// =============================================================
+// CONFIG — change this to your deployed API base URL
+// =============================================================
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3000'
+  : 'https://api.webintel.dev';
+
+// =============================================================
+// STATE
+// =============================================================
+let currentApiKey = localStorage.getItem('wi_api_key') || '';
+let pgEndpoint = 'preview';
+let pgFormat = 'png';
+
+// Restore saved key into playground input on load
+if (currentApiKey) {
+  window.addEventListener('DOMContentLoaded', () => {
+    const inp = document.getElementById('pg-apikey');
+    inp.value = currentApiKey;
+    inp.style.opacity = '1';
+    inp.readOnly = false;
+    inp.onclick = null;
+    inp.placeholder = 'wi_free_...';
+    pgUpdateCode();
+  });
+}
+
+// =============================================================
+// CODE TAB SWITCHER (hero demo)
+// =============================================================
 function showTab(tab) {
   const tabs = ['curl','js','python','mcp'];
   tabs.forEach(t => {
     document.getElementById('code-'+t).style.display = t === tab ? 'block' : 'none';
   });
   document.querySelectorAll('.code-tab').forEach(el => {
-    el.classList.toggle('active', el.dataset.tab === tab);
+    el.classList.toggle('active', el.textContent.toLowerCase().includes(tab === 'js' ? 'java' : tab));
   });
 }
 
-// --- Scroll animations ---
+// =============================================================
+// SCROLL ANIMATIONS
+// =============================================================
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-// =====================================================
-// STRIPE INTEGRATION POINTS
-// =====================================================
-//
-// 1. Install Stripe.js in <head>:
-//    <script src="https://js.stripe.com/v3/"></ script>
-//
-// 2. Set your publishable key:
-//    const stripe = Stripe('pk_live_your_key_here');
-//
-// 3. Create a checkout session on your backend:
-//    POST /api/create-checkout-session
-//    Body: { priceId: 'price_xxx', email: 'user@email.com' }
-//
-// 4. Redirect to Stripe Checkout:
-//    const { sessionId } = await response.json();
-//    await stripe.redirectToCheckout({ sessionId });
-//
-// 5. Handle webhook on your backend:
-//    POST /api/webhooks/stripe
-//    On 'checkout.session.completed':
-//      - Generate API key (wi_live_xxxx)
-//      - Store in PostgreSQL with tier='paid'
-//      - Email key to customer
-//
-// 6. Handle subscription changes:
-//    'customer.subscription.updated' → update tier
-//    'customer.subscription.deleted' → downgrade to free
-//    'invoice.payment_failed' → notify + grace period
-// =====================================================
-
-const STRIPE_PRICE_IDS = {
-  pro: 'price_REPLACE_WITH_STRIPE_PRICE_ID'
-};
-
-async function handleCheckout(plan) {
-  const email = document.getElementById('signup-email').value;
-
-  // --- REPLACE THIS BLOCK WITH REAL STRIPE CHECKOUT ---
-  // const response = await fetch('/api/create-checkout-session', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({
-  //     priceId: STRIPE_PRICE_IDS[plan],
-  //     email: email || undefined,
-  //     successUrl: window.location.origin + '/dashboard?session_id={CHECKOUT_SESSION_ID}',
-  //     cancelUrl: window.location.origin + '/pricing'
-  //   })
-  // });
-  // const { sessionId } = await response.json();
-  // const stripe = Stripe('pk_live_your_key');
-  // await stripe.redirectToCheckout({ sessionId });
-  // --- END STRIPE BLOCK ---
-
-  alert(`Stripe checkout for "${plan}" plan will open here.\n\nTo enable:\n1. Add your Stripe price ID\n2. Build the /api/create-checkout-session endpoint\n3. Uncomment the checkout code above`);
-}
-
+// =============================================================
+// SIGNUP — calls the real API
+// =============================================================
 async function handleSignup(tier) {
-  const email = document.getElementById('signup-email').value;
-  if (!email || !email.includes('@')) {
-    document.getElementById('signup-email').focus();
-    document.getElementById('signup-email').style.borderColor = 'var(--coral)';
+  const emailInput = document.getElementById('signup-email');
+  const email = emailInput.value.trim();
+  const msgEl = document.getElementById('signup-msg');
+  const keyEl = document.getElementById('signup-key-display');
+  const btn = document.getElementById('signup-btn');
+
+  msgEl.className = 'signup-msg';
+  msgEl.style.display = 'none';
+  keyEl.classList.remove('visible');
+
+  if (!email || !email.includes('@') || !email.includes('.')) {
+    emailInput.focus();
+    emailInput.style.borderColor = 'var(--coral)';
+    msgEl.textContent = 'Please enter a valid email address.';
+    msgEl.className = 'signup-msg error';
     return;
   }
 
-  // --- REPLACE WITH REAL SIGNUP ---
-  // const response = await fetch('/api/signup', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ email, tier })
-  // });
-  // const { apiKey } = await response.json();
-  // Show apiKey to user, redirect to dashboard
-  // --- END SIGNUP BLOCK ---
+  btn.disabled = true;
+  btn.textContent = 'Creating...';
 
-  alert(`Free signup for "${email}" will generate an API key here.\n\nTo enable:\n1. Build the /api/signup endpoint\n2. Generate a key (wi_free_xxxx)\n3. Store in PostgreSQL\n4. Email the key`);
+  try {
+    const res = await fetch(`${API_BASE}/api/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, tier })
+    });
+
+    const json = await res.json();
+
+    if (!res.ok) {
+      msgEl.textContent = json.message || 'Something went wrong. Try again.';
+      msgEl.className = 'signup-msg error';
+      return;
+    }
+
+    currentApiKey = json.data.apiKey;
+    localStorage.setItem('wi_api_key', currentApiKey);
+
+    msgEl.innerHTML = `Key created and sent to <strong>${email}</strong>. Check your inbox.`;
+    msgEl.className = 'signup-msg success';
+
+    document.getElementById('signup-key-value').textContent = currentApiKey;
+    keyEl.classList.add('visible');
+
+    // Push key into playground
+    const pgInput = document.getElementById('pg-apikey');
+    pgInput.value = currentApiKey;
+    pgInput.style.opacity = '1';
+    pgInput.readOnly = false;
+    pgInput.onclick = null;
+    pgInput.placeholder = 'wi_free_...';
+    pgUpdateCode();
+
+  } catch (err) {
+    msgEl.textContent = 'Network error — is the API running? (' + err.message + ')';
+    msgEl.className = 'signup-msg error';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Get API Key';
+  }
+}
+
+function copyKey(e) {
+  navigator.clipboard.writeText(currentApiKey);
+  const btn = e.currentTarget;
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy key', 1500);
+}
+
+function useKeyInPlayground() {
+  document.getElementById('playground').scrollIntoView({ behavior: 'smooth' });
+}
+
+// =============================================================
+// STRIPE CHECKOUT
+// =============================================================
+async function handleCheckout(plan) {
+  const email = document.getElementById('signup-email').value.trim();
+  if (!email || !email.includes('@')) {
+    document.getElementById('signup-email').focus();
+    const msg = document.getElementById('signup-msg');
+    msg.textContent = 'Enter your email first, then click Subscribe.';
+    msg.className = 'signup-msg error';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/billing/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const json = await res.json();
+    if (json.url) {
+      window.location.href = json.url;
+    } else {
+      const msg = document.getElementById('signup-msg');
+      msg.textContent = json.message || 'Could not start checkout. Try again.';
+      msg.className = 'signup-msg error';
+    }
+  } catch (err) {
+    const msg = document.getElementById('signup-msg');
+    msg.textContent = 'Network error — is the API running? ' + err.message;
+    msg.className = 'signup-msg error';
+  }
 }
 
 function handleContact() {
   window.location.href = 'mailto:hello@webintel.dev?subject=WebIntel%20Enterprise%20Inquiry';
 }
+
+// =============================================================
+// PLAYGROUND
+// =============================================================
+function pgSetEndpoint(ep) {
+  pgEndpoint = ep;
+  document.querySelectorAll('#pg-endpoint-row .pg-chip').forEach(c =>
+    c.classList.toggle('active', c.dataset.ep === ep)
+  );
+  document.getElementById('pg-ss-opts').style.display = ep === 'screenshot' ? 'block' : 'none';
+  pgUpdateCode();
+}
+
+function pgSetFormat(fmt) {
+  pgFormat = fmt;
+  document.querySelectorAll('#pg-format-row .pg-chip').forEach(c =>
+    c.classList.toggle('active', c.dataset.fmt === fmt)
+  );
+  pgUpdateCode();
+}
+
+function pgBuildParams() {
+  const url = document.getElementById('pg-url').value.trim() || 'https://github.com';
+  const params = { url };
+
+  if (pgEndpoint === 'screenshot') {
+    params.format = pgFormat;
+    params.response = 'json';
+    if (document.getElementById('pg-fullpage').checked) params.fullPage = 'true';
+    if (document.getElementById('pg-darkmode').checked) params.darkMode = 'true';
+  }
+  return params;
+}
+
+function pgBuildUrl() {
+  const params = pgBuildParams();
+  const qs = new URLSearchParams(params).toString();
+  return `${API_BASE}/v1/${pgEndpoint}?${qs}`;
+}
+
+function pgGenerateCode() {
+  const key = document.getElementById('pg-apikey').value || 'YOUR_API_KEY';
+  const params = pgBuildParams();
+  const qs = new URLSearchParams(params).toString();
+  const fullUrl = `${API_BASE}/v1/${pgEndpoint}?${qs}`;
+
+  return `fetch('${fullUrl}', {
+  headers: { 'x-api-key': '${key}' }
+})
+.then(res => res.json())
+.then(data => console.log(data));`;
+}
+
+function pgUpdateCode() {
+  const el = document.getElementById('pg-code-output');
+  const code = pgGenerateCode();
+
+  const highlighted = code
+    .replace(/\b(fetch|const|let|then|console|await)\b/g, '<span style="color:var(--purple)">$1</span>')
+    .replace(/(headers)/g, '<span style="color:var(--coral)">$1</span>')
+    .replace(/('x-api-key')/g, '<span style="color:var(--green)">$1</span>')
+    .replace(/(res\.json|log)/g, '<span style="color:var(--amber)">$1</span>');
+
+  el.innerHTML = highlighted;
+}
+
+function pgCopyCode(e) {
+  navigator.clipboard.writeText(pgGenerateCode());
+  const btn = e.currentTarget;
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy', 1500);
+}
+
+// Auto-update code when URL input changes
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('pg-url').addEventListener('input', pgUpdateCode);
+  document.getElementById('pg-fullpage')?.addEventListener('change', pgUpdateCode);
+  document.getElementById('pg-darkmode')?.addEventListener('change', pgUpdateCode);
+  pgUpdateCode();
+});
+
+// Run the actual API request
+async function pgRun() {
+  const apiKey = document.getElementById('pg-apikey').value.trim();
+  const url = document.getElementById('pg-url').value.trim();
+  const btn = document.getElementById('pg-run-btn');
+  const resultsEl = document.getElementById('pg-results');
+
+  if (!apiKey) {
+    document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('signup-email').focus();
+    return;
+  }
+  if (!url) {
+    document.getElementById('pg-url').focus();
+    return;
+  }
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+  resultsEl.className = 'pg-results';
+  resultsEl.innerHTML = '';
+
+  const startTime = performance.now();
+
+  try {
+    const reqUrl = pgBuildUrl();
+    const res = await fetch(reqUrl, {
+      headers: { 'x-api-key': apiKey }
+    });
+    const elapsed = Math.round(performance.now() - startTime);
+    const json = await res.json();
+
+    if (!res.ok || !json.success) {
+      resultsEl.innerHTML = `
+        <div class="pg-results-header">
+          <span class="pg-results-badge error">${res.status} Error</span>
+          <span class="pg-results-time">${elapsed}ms</span>
+        </div>
+        <div class="pg-error-msg">${escHtml(json.message || json.error || 'Unknown error')}</div>
+      `;
+      resultsEl.className = 'pg-results visible';
+      return;
+    }
+
+    const data = json.data;
+
+    if (pgEndpoint === 'preview') {
+      resultsEl.innerHTML = renderPreviewResult(data, res.status, elapsed);
+    } else {
+      resultsEl.innerHTML = renderScreenshotResult(data, res.status, elapsed);
+    }
+    resultsEl.className = 'pg-results visible';
+
+  } catch (err) {
+    const elapsed = Math.round(performance.now() - startTime);
+    resultsEl.innerHTML = `
+      <div class="pg-results-header">
+        <span class="pg-results-badge error">Network Error</span>
+        <span class="pg-results-time">${elapsed}ms</span>
+      </div>
+      <div class="pg-error-msg">Could not reach the API. ${escHtml(err.message)}</div>
+    `;
+    resultsEl.className = 'pg-results visible';
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+function renderPreviewResult(data, status, elapsed) {
+  const htmlFields = new Set();
+  const fields = [
+    ['title', data.title],
+    ['description', data.description],
+    ['image', data.image ? (htmlFields.add('image'), `<a href="${escAttr(data.image)}" target="_blank">${escHtml(truncate(data.image, 60))}</a><br><img src="${escAttr(data.image)}" alt="OG image" loading="lazy" style="max-height:120px">`) : null],
+    ['favicon', data.favicon ? (htmlFields.add('favicon'), `<img src="${escAttr(data.favicon)}" alt="favicon" style="width:24px;height:24px;vertical-align:middle"> <a href="${escAttr(data.favicon)}" target="_blank">${escHtml(truncate(data.favicon, 50))}</a>`) : null],
+    ['siteName', data.siteName],
+    ['type', data.type],
+    ['language', data.language],
+    ['author', data.author],
+    ['themeColor', data.themeColor ? (htmlFields.add('themeColor'), `<span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:${escAttr(data.themeColor)};vertical-align:middle;margin-right:6px"></span>${escHtml(data.themeColor)}`) : null],
+    ['canonical', data.canonical ? (htmlFields.add('canonical'), `<a href="${escAttr(data.canonical)}" target="_blank">${escHtml(truncate(data.canonical, 60))}</a>`) : null],
+    ['twitter.card', data.twitter?.card],
+    ['twitter.site', data.twitter?.site],
+    ['published', data.published],
+    ['responseTime', data.responseTime ? data.responseTime + 'ms' : null],
+  ];
+
+  const items = fields
+    .filter(([, v]) => v)
+    .map(([k, v]) => `
+      <div class="pg-meta-item">
+        <div class="pg-meta-key">${escHtml(k)}</div>
+        <div class="pg-meta-val">${htmlFields.has(k) ? v : escHtml(String(v))}</div>
+      </div>
+    `).join('');
+
+  return `
+    <div class="pg-results-header">
+      <span class="pg-results-badge success">${status} OK</span>
+      <span class="pg-results-time">${elapsed}ms</span>
+    </div>
+    <div class="pg-meta-grid">${items}</div>
+  `;
+}
+
+function renderScreenshotResult(data, status, elapsed) {
+  const imgSrc = data.image; // base64 data URI
+  return `
+    <div class="pg-results-header">
+      <span class="pg-results-badge success">${status} OK</span>
+      <span class="pg-results-time">${elapsed}ms &middot; ${data.width || '?'}x${data.height || '?'} &middot; ${data.format || pgFormat}</span>
+    </div>
+    <div class="pg-screenshot-result">
+      <img src="${escAttr(imgSrc)}" alt="Screenshot result">
+    </div>
+  `;
+}
+
+// Helpers
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function escAttr(s) { return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function truncate(s, n) { return s.length > n ? s.slice(0, n) + '...' : s; }
 </script>
 </body>
 </html>
