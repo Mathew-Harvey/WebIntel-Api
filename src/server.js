@@ -70,7 +70,7 @@ app.use(express.static(path.join(__dirname, '..', 'public'), { index: false }));
 app.get('/', (req, res) => {
   const acceptsHtml = (req.headers.accept || '').includes('text/html');
   if (acceptsHtml) {
-    return res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+    return res.redirect(301, 'https://webintel.dev');
   }
   res.json({
     name: 'WebIntel API',
