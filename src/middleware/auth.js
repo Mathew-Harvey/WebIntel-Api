@@ -36,7 +36,7 @@ async function authenticate(req, res, next) {
     return res.status(401).json({
       error: 'missing_api_key',
       message: 'Include your API key via the x-api-key header.',
-      docs: 'https://webintel-api.com/docs'
+      docs: 'https://webintel.dev/docs'
     });
   }
 

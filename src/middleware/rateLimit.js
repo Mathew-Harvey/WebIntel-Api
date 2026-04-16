@@ -32,8 +32,8 @@ const limiter = rateLimit({
       error: 'rate_limit_exceeded',
       message: `You've hit your ${req.tier} tier limit of ${limit} requests/day.`,
       upgrade: req.tier === 'free'
-        ? 'Upgrade to paid at https://webintel-api.com/pricing for 5,000 requests/day.'
-        : 'Contact us for enterprise limits at hello@webintel-api.com',
+        ? 'Upgrade to paid at https://webintel.dev/#pricing for 5,000 requests/day.'
+        : 'Contact us for enterprise limits at hello@webintel.dev',
       retryAfter
     });
   }

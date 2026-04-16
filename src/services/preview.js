@@ -15,7 +15,7 @@ const TIMEOUT = parseInt(process.env.PREVIEW_TIMEOUT) || 10000;
 const MAX_REDIRECTS = parseInt(process.env.MAX_REDIRECT_FOLLOWS) || 5;
 const MAX_BODY_BYTES = parseInt(process.env.MAX_PREVIEW_BODY_BYTES) || 5 * 1024 * 1024; // 5 MB
 
-const USER_AGENT = 'WebIntelBot/1.0 (+https://webintel-api.com/bot)';
+const USER_AGENT = 'WebIntelBot/1.0 (+https://webintel.dev/bot)';
 
 async function fetchWithRedirectLimit(url, maxRedirects) {
   let currentUrl = url;

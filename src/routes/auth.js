@@ -112,7 +112,7 @@ function errorPage(message) {
 </style></head>
 <body><div class="card">
   <h1>Sign-in failed</h1>
-  <p>${message}</p>
+  <p>${message.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}</p>
   <a href="/">Back to WebIntel</a>
 </div></body></html>`;
 }
