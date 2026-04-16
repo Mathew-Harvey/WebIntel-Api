@@ -548,7 +548,7 @@ data = res.<span class="method">json</span>()[<span class="string">"data"</span>
         <!-- Controls -->
         <div class="pg-controls">
           <label class="pg-label">API Key</label>
-          <input type="text" class="pg-input" id="pg-apikey" placeholder="Sign up below to get a key" readonly style="cursor:pointer;opacity:0.7" onclick="document.getElementById('signup').scrollIntoView({behavior:'smooth'})">
+          <input type="text" class="pg-input" id="pg-apikey" placeholder="Paste your API key or sign up below" oninput="pgUpdateCode()">
 
           <label class="pg-label">Endpoint</label>
           <div class="pg-select-row" id="pg-endpoint-row">
@@ -821,12 +821,7 @@ let pgFormat = 'png';
 // Restore saved key into playground input on load
 if (currentApiKey) {
   window.addEventListener('DOMContentLoaded', () => {
-    const inp = document.getElementById('pg-apikey');
-    inp.value = currentApiKey;
-    inp.style.opacity = '1';
-    inp.readOnly = false;
-    inp.onclick = null;
-    inp.placeholder = 'wi_free_...';
+    document.getElementById('pg-apikey').value = currentApiKey;
     pgUpdateCode();
   });
 }
@@ -901,13 +896,7 @@ async function handleSignup(tier) {
     document.getElementById('signup-key-value').textContent = currentApiKey;
     keyEl.classList.add('visible');
 
-    // Push key into playground
-    const pgInput = document.getElementById('pg-apikey');
-    pgInput.value = currentApiKey;
-    pgInput.style.opacity = '1';
-    pgInput.readOnly = false;
-    pgInput.onclick = null;
-    pgInput.placeholder = 'wi_free_...';
+    document.getElementById('pg-apikey').value = currentApiKey;
     pgUpdateCode();
 
   } catch (err) {
