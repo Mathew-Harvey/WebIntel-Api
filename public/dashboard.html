@@ -51,6 +51,7 @@ nav .inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items
 .btn-full{width:100%;padding:14px;border-radius:10px;background:var(--accent);color:var(--bg);font-weight:700;font-size:14px;border:none;cursor:pointer;font-family:var(--sans);transition:all 0.2s}
 .btn-full:hover{background:#67e8f9;transform:translateY(-1px)}
 .btn-full:disabled{opacity:0.5;cursor:not-allowed}
+.btn-full.sent{background:var(--green);opacity:1;cursor:default}
 .login-msg{margin-top:16px;padding:12px;border-radius:8px;font-size:13px;display:none}
 .login-msg.success{display:block;background:var(--green-glow);border:1px solid rgba(52,211,153,0.25);color:var(--green)}
 .login-msg.error{display:block;background:rgba(251,113,133,0.08);border:1px solid rgba(251,113,133,0.2);color:var(--coral)}
@@ -177,6 +178,16 @@ let dashData = null;
 // -------------------------------------------------------
 // Magic link login
 // -------------------------------------------------------
+document.getElementById('login-email').addEventListener('input', () => {
+  const btn = document.getElementById('login-btn');
+  if (btn.classList.contains('sent')) {
+    btn.classList.remove('sent');
+    btn.disabled = false;
+    btn.textContent = 'Send magic link';
+    document.getElementById('login-msg').style.display = 'none';
+  }
+});
+
 async function sendMagicLink() {
   const email = document.getElementById('login-email').value.trim();
   const msg = document.getElementById('login-msg');
@@ -205,6 +216,9 @@ async function sendMagicLink() {
     if (res.ok) {
       msg.textContent = 'Check your email for a sign-in link. It expires in 15 minutes.';
       msg.className = 'login-msg success';
+      btn.textContent = '✓ Link sent';
+      btn.classList.add('sent');
+      return;
     } else {
       msg.textContent = json.message || 'Something went wrong.';
       msg.className = 'login-msg error';
@@ -212,10 +226,9 @@ async function sendMagicLink() {
   } catch (err) {
     msg.textContent = 'Network error: ' + err.message;
     msg.className = 'login-msg error';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Send magic link';
   }
+  btn.disabled = false;
+  btn.textContent = 'Send magic link';
 }
 
 // -------------------------------------------------------

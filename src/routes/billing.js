@@ -147,12 +147,15 @@ async function handleCheckoutCompleted(stripe, session) {
   }
 
   const sub = await stripe.subscriptions.retrieve(subscriptionId);
+  const periodEnd = sub.current_period_end
+    || sub.items?.data[0]?.current_period_end
+    || sub.billing_cycle_anchor;
   await upsertSubscription(
     user.id,
     subscriptionId,
     sub.items.data[0]?.price?.id,
     sub.status,
-    new Date(sub.current_period_end * 1000)
+    periodEnd ? new Date(periodEnd * 1000) : new Date()
   );
 
   await upgradeUserKeys(user.id, 'paid');
@@ -172,12 +175,15 @@ async function handleSubscriptionChange(stripe, subscription) {
   if (!user) return;
 
   const status = subscription.status;
+  const periodEnd = subscription.current_period_end
+    || subscription.items?.data[0]?.current_period_end
+    || subscription.billing_cycle_anchor;
   await upsertSubscription(
     user.id,
     subscription.id,
     subscription.items.data[0]?.price?.id,
     status,
-    new Date(subscription.current_period_end * 1000)
+    periodEnd ? new Date(periodEnd * 1000) : new Date()
   );
 
   if (status === 'canceled' || status === 'unpaid' || status === 'past_due') {
