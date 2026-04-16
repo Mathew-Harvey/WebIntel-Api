@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WebIntel API — Link Preview & Screenshot API for Developers and LLMs</title>
 <meta name="description" content="Extract Open Graph metadata and capture screenshots from any URL. REST API + MCP server for Claude and AI agents. Free tier available.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0a0f'/><text x='4' y='23' font-family='monospace' font-size='18' font-weight='bold' fill='%2322d3ee'>wi</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -988,7 +989,8 @@ function pgSetFormat(fmt) {
 }
 
 function pgBuildParams() {
-  const url = document.getElementById('pg-url').value.trim() || 'https://github.com';
+  let url = document.getElementById('pg-url').value.trim() || 'https://github.com';
+  if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
   const params = { url };
 
   if (pgEndpoint === 'screenshot') {
