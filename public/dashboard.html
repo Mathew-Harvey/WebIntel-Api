@@ -12,23 +12,17 @@
 :root{
   --bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a28;--bg4:#222236;
   --text:#e4e4ef;--text2:#9494a8;--text3:#6a6a80;
-  --accent:#22d3ee;--accent2:#06b6d4;
+  --accent:#22d3ee;--accent2:#06b6d4;--accent-glow:rgba(34,211,238,0.12);
   --green:#34d399;--green-glow:rgba(52,211,153,0.12);
   --amber:#fbbf24;--amber-glow:rgba(251,191,36,0.10);
-  --coral:#fb7185;
+  --coral:#fb7185;--purple:#a78bfa;
   --border:rgba(148,148,168,0.12);--border2:rgba(148,148,168,0.06);
   --mono:'JetBrains Mono',monospace;--sans:'DM Sans',sans-serif;
 }
 html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(148,148,168,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(148,148,168,0.03) 1px,transparent 1px);background-size:60px 60px}
 
-body::before{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:linear-gradient(rgba(148,148,168,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(148,148,168,0.03) 1px,transparent 1px);
-  background-size:60px 60px;
-}
-
-/* Nav */
 nav{position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
 nav .inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px}
 .nav-logo{font-family:var(--mono);font-weight:700;font-size:18px;color:var(--text);text-decoration:none;letter-spacing:-0.5px}
@@ -38,10 +32,8 @@ nav .inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items
 .btn-sm{font-family:var(--mono);font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;transition:all 0.2s}
 .btn-sm:hover{border-color:var(--accent);color:var(--accent)}
 
-/* Layout */
 .container{max-width:960px;margin:0 auto;padding:40px 24px;position:relative;z-index:1}
 
-/* Login screen */
 .login-wrap{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 64px)}
 .login-card{text-align:center;max-width:400px;width:100%;padding:48px 32px;background:var(--bg2);border:1px solid var(--border);border-radius:16px}
 .login-card h1{font-size:24px;margin-bottom:8px}
@@ -56,14 +48,10 @@ nav .inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items
 .login-msg.success{display:block;background:var(--green-glow);border:1px solid rgba(52,211,153,0.25);color:var(--green)}
 .login-msg.error{display:block;background:rgba(251,113,133,0.08);border:1px solid rgba(251,113,133,0.2);color:var(--coral)}
 
-/* Dashboard */
-.dash{display:none}
-.dash.visible{display:block}
-
+.dash{display:none}.dash.visible{display:block}
 .section-title{font-size:28px;font-weight:700;letter-spacing:-1px;margin-bottom:8px}
 .section-desc{font-size:14px;color:var(--text2);margin-bottom:32px}
 
-/* Plan banner */
 .plan-banner{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;margin-bottom:32px;flex-wrap:wrap;gap:12px}
 .plan-info{display:flex;align-items:center;gap:12px}
 .plan-badge{font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 12px;border-radius:6px;letter-spacing:1px;text-transform:uppercase}
@@ -75,10 +63,8 @@ nav .inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items
 .btn-outline{font-family:var(--sans);font-size:13px;padding:10px 20px;border-radius:8px;background:transparent;color:var(--text);font-weight:500;border:1px solid var(--border);cursor:pointer;transition:all 0.2s}
 .btn-outline:hover{border-color:var(--text3)}
 
-/* Keys list */
 .keys-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .keys-header h2{font-size:18px;font-weight:700}
-
 .key-card{display:flex;align-items:center;gap:12px;padding:16px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;flex-wrap:wrap}
 .key-value{font-family:var(--mono);font-size:13px;color:var(--accent);flex:1;word-break:break-all;min-width:200px}
 .key-meta{display:flex;align-items:center;gap:12px;flex-shrink:0}
@@ -90,20 +76,51 @@ nav .inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items
 .key-copy,.key-revoke{font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--bg);color:var(--text3);cursor:pointer;transition:all 0.2s}
 .key-copy:hover{border-color:var(--accent);color:var(--accent)}
 .key-revoke:hover{border-color:var(--coral);color:var(--coral)}
-
 .empty-state{text-align:center;padding:40px;color:var(--text3);font-size:14px}
 
-/* Quick start */
-.quickstart{margin-top:40px;padding:24px;background:var(--bg2);border:1px solid var(--border);border-radius:12px}
-.quickstart h3{font-size:16px;font-weight:700;margin-bottom:12px}
-.quickstart pre{background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:16px;font-family:var(--mono);font-size:12px;line-height:1.8;overflow-x:auto;color:var(--text2)}
-.quickstart .hl-cmd{color:var(--amber)}
-.quickstart .hl-flag{color:var(--accent)}
-.quickstart .hl-str{color:var(--green)}
+/* Quickstart tabs */
+.qs-section{margin-top:40px}
+.qs-section h2{font-size:18px;font-weight:700;margin-bottom:16px}
+.qs-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.qs-tabs{display:flex;border-bottom:1px solid var(--border);overflow-x:auto}
+.qs-tab{font-family:var(--mono);font-size:12px;padding:10px 20px;color:var(--text3);cursor:pointer;border:none;background:none;transition:all 0.2s;white-space:nowrap;border-bottom:2px solid transparent}
+.qs-tab:hover{color:var(--text2)}
+.qs-tab.active{color:var(--accent);border-bottom-color:var(--accent);background:rgba(34,211,238,0.04)}
+.qs-body{position:relative}
+.qs-body pre{margin:0;padding:20px;font-family:var(--mono);font-size:12px;line-height:1.8;overflow-x:auto;color:var(--text2);min-height:120px}
+.qs-body .hl-kw{color:var(--purple)}.qs-body .hl-fn{color:var(--amber)}.qs-body .hl-str{color:var(--green)}.qs-body .hl-key{color:var(--coral)}.qs-body .hl-url{color:var(--accent)}.qs-body .hl-cmt{color:var(--text3)}
+.qs-copy{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);color:var(--text3);cursor:pointer;transition:all 0.2s}
+.qs-copy:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Playground */
+.pg-section{margin-top:40px}
+.pg-section h2{font-size:18px;font-weight:700;margin-bottom:16px}
+.pg-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px}
+.pg-row{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.pg-row:last-child{margin-bottom:0}
+.pg-label{display:block;font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.pg-input{flex:1;min-width:200px;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-family:var(--sans);outline:none;transition:border-color 0.2s}
+.pg-input:focus{border-color:var(--accent)}
+.pg-chip{font-family:var(--mono);font-size:12px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text3);cursor:pointer;transition:all 0.2s}
+.pg-chip.active{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+.pg-chip:hover:not(.active){border-color:var(--text3);color:var(--text2)}
+.pg-run{padding:10px 24px;border-radius:8px;background:var(--accent);color:var(--bg);font-weight:700;font-size:13px;border:none;cursor:pointer;font-family:var(--sans);transition:all 0.2s}
+.pg-run:hover:not(:disabled){background:#67e8f9;transform:translateY(-1px)}
+.pg-run:disabled{opacity:0.5;cursor:not-allowed}
+.pg-results{margin-top:16px;display:none}
+.pg-results.visible{display:block}
+.pg-results-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.pg-badge{font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:6px;font-weight:700}
+.pg-badge.ok{background:var(--green-glow);color:var(--green);border:1px solid rgba(52,211,153,0.2)}
+.pg-badge.err{background:rgba(251,113,133,0.1);color:var(--coral);border:1px solid rgba(251,113,133,0.2)}
+.pg-time{font-family:var(--mono);font-size:11px;color:var(--text3)}
+.pg-json{background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:16px;font-family:var(--mono);font-size:12px;line-height:1.7;overflow-x:auto;color:var(--text2);max-height:400px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
+.pg-img{max-width:100%;border-radius:8px;border:1px solid var(--border);margin-top:8px}
 
 @media(max-width:600px){
   .plan-banner{flex-direction:column;align-items:flex-start}
   .key-card{flex-direction:column;align-items:flex-start}
+  .pg-row{flex-direction:column}
 }
 </style>
 </head>
@@ -111,7 +128,7 @@ nav .inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items
 
 <nav>
   <div class="inner">
-    <a href="/" class="nav-logo">web<span>intel</span></a>
+    <a href="https://webintel.dev" class="nav-logo">web<span>intel</span></a>
     <div class="nav-right" id="nav-right" style="display:none">
       <span class="nav-email" id="nav-email"></span>
       <button class="btn-sm" onclick="handleLogout()">Sign out</button>
@@ -119,7 +136,6 @@ nav .inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items
   </div>
 </nav>
 
-<!-- Login screen -->
 <div id="login-screen" class="login-wrap">
   <div class="login-card">
     <h1>Sign in to your dashboard</h1>
@@ -130,13 +146,11 @@ nav .inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items
   </div>
 </div>
 
-<!-- Dashboard (hidden until authenticated) -->
 <div id="dashboard" class="container dash">
   <h1 class="section-title">Dashboard</h1>
-  <p class="section-desc" id="dash-subtitle">Manage your API keys and subscription.</p>
+  <p class="section-desc">Manage your API keys, test endpoints, and view quickstart guides.</p>
 
-  <!-- Plan banner -->
-  <div class="plan-banner" id="plan-banner">
+  <div class="plan-banner">
     <div class="plan-info">
       <span class="plan-badge free" id="plan-badge">FREE</span>
       <span class="plan-text" id="plan-text">100 requests/day</span>
@@ -144,27 +158,60 @@ nav .inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items
     <div id="plan-actions"></div>
   </div>
 
-  <!-- API Keys -->
   <div class="keys-header">
     <h2>API Keys</h2>
     <button class="btn-sm" id="create-key-btn" onclick="handleCreateKey()">+ New key</button>
   </div>
   <div id="keys-list"></div>
 
-  <!-- Quick start -->
-  <div class="quickstart" id="quickstart">
-    <h3>Quick start</h3>
-    <pre id="quickstart-code"></pre>
+  <!-- Playground -->
+  <div class="pg-section">
+    <h2>Playground</h2>
+    <div class="pg-card">
+      <div>
+        <label class="pg-label">Endpoint</label>
+        <div class="pg-row" id="pg-ep-row" style="margin-bottom:16px">
+          <button class="pg-chip active" onclick="pgSetEp('preview',this)">Link Preview</button>
+          <button class="pg-chip" onclick="pgSetEp('screenshot',this)">Screenshot</button>
+        </div>
+      </div>
+      <div class="pg-row">
+        <div style="flex:1;min-width:200px">
+          <label class="pg-label">URL</label>
+          <input type="text" class="pg-input" id="pg-url" placeholder="https://github.com" value="https://github.com">
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button class="pg-run" id="pg-run" onclick="pgRun()">Run</button>
+        </div>
+      </div>
+      <div class="pg-results" id="pg-results"></div>
+    </div>
+  </div>
+
+  <!-- Quickstart -->
+  <div class="qs-section">
+    <h2>Quick start</h2>
+    <div class="qs-card">
+      <div class="qs-tabs">
+        <button class="qs-tab active" onclick="qsTab('curl',this)">cURL</button>
+        <button class="qs-tab" onclick="qsTab('js',this)">JavaScript</button>
+        <button class="qs-tab" onclick="qsTab('python',this)">Python</button>
+        <button class="qs-tab" onclick="qsTab('mcp',this)">MCP (Claude)</button>
+      </div>
+      <div class="qs-body">
+        <button class="qs-copy" onclick="qsCopy(this)">Copy</button>
+        <pre id="qs-code"></pre>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
 const API_BASE = window.location.origin;
 let dashData = null;
+let currentQsTab = 'curl';
+let pgEndpoint = 'preview';
 
-// -------------------------------------------------------
-// Boot: check if already signed in
-// -------------------------------------------------------
 (async function boot() {
   try {
     const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' });
@@ -175,9 +222,6 @@ let dashData = null;
   } catch {}
 })();
 
-// -------------------------------------------------------
-// Magic link login
-// -------------------------------------------------------
 document.getElementById('login-email').addEventListener('input', () => {
   const btn = document.getElementById('login-btn');
   if (btn.classList.contains('sent')) {
@@ -192,33 +236,22 @@ async function sendMagicLink() {
   const email = document.getElementById('login-email').value.trim();
   const msg = document.getElementById('login-msg');
   const btn = document.getElementById('login-btn');
-
-  msg.className = 'login-msg';
-  msg.style.display = 'none';
-
+  msg.className = 'login-msg'; msg.style.display = 'none';
   if (!email || !email.includes('@')) {
     msg.textContent = 'Enter a valid email address.';
-    msg.className = 'login-msg error';
-    return;
+    msg.className = 'login-msg error'; return;
   }
-
-  btn.disabled = true;
-  btn.textContent = 'Sending...';
-
+  btn.disabled = true; btn.textContent = 'Sending...';
   try {
     const res = await fetch(`${API_BASE}/api/auth/magic-link`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     });
     const json = await res.json();
-
     if (res.ok) {
       msg.textContent = 'Check your email for a sign-in link. It expires in 15 minutes.';
       msg.className = 'login-msg success';
-      btn.textContent = '✓ Link sent';
-      btn.classList.add('sent');
-      return;
+      btn.textContent = '✓ Link sent'; btn.classList.add('sent'); return;
     } else {
       msg.textContent = json.message || 'Something went wrong.';
       msg.className = 'login-msg error';
@@ -227,48 +260,40 @@ async function sendMagicLink() {
     msg.textContent = 'Network error: ' + err.message;
     msg.className = 'login-msg error';
   }
-  btn.disabled = false;
-  btn.textContent = 'Send magic link';
+  btn.disabled = false; btn.textContent = 'Send magic link';
 }
 
-// -------------------------------------------------------
-// Load dashboard
-// -------------------------------------------------------
 async function loadDashboard(user) {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('dashboard').classList.add('visible');
   document.getElementById('nav-right').style.display = 'flex';
   document.getElementById('nav-email').textContent = user.email;
-
   try {
     const res = await fetch(`${API_BASE}/api/dashboard`, { credentials: 'include' });
-    if (!res.ok) throw new Error('Failed to load');
+    if (!res.ok) throw new Error('Failed');
     const json = await res.json();
     dashData = json.data;
     renderDashboard();
-  } catch (err) {
-    document.getElementById('keys-list').innerHTML =
-      '<div class="empty-state">Could not load dashboard data. Try refreshing.</div>';
+  } catch {
+    document.getElementById('keys-list').innerHTML = '<div class="empty-state">Could not load dashboard data. Try refreshing.</div>';
   }
+}
+
+function getFirstKey() {
+  const active = (dashData?.keys || []).filter(k => k.active);
+  return active[0]?.key || 'YOUR_API_KEY';
 }
 
 function renderDashboard() {
   const { tier, keys, subscription, hasStripeAccount } = dashData;
-
-  // Plan badge
   const badge = document.getElementById('plan-badge');
   badge.textContent = tier === 'paid' ? 'PRO' : 'FREE';
   badge.className = `plan-badge ${tier === 'paid' ? 'paid' : 'free'}`;
-
   const planText = document.getElementById('plan-text');
   planText.textContent = tier === 'paid' ? '5,000 requests/day' : '100 requests/day';
-
   if (subscription?.currentPeriodEnd) {
-    const end = new Date(subscription.currentPeriodEnd);
-    planText.textContent += ` · renews ${end.toLocaleDateString()}`;
+    planText.textContent += ` · renews ${new Date(subscription.currentPeriodEnd).toLocaleDateString()}`;
   }
-
-  // Plan actions
   const actions = document.getElementById('plan-actions');
   if (tier === 'paid' && hasStripeAccount) {
     actions.innerHTML = '<button class="btn-outline" onclick="openPortal()">Manage subscription</button>';
@@ -276,139 +301,200 @@ function renderDashboard() {
     actions.innerHTML = '<button class="btn-accent" onclick="upgradeToPro()">Upgrade to Pro — $9/mo</button>';
   }
 
-  // Keys
   const list = document.getElementById('keys-list');
   const activeKeys = keys.filter(k => k.active);
-
   if (activeKeys.length === 0) {
     list.innerHTML = '<div class="empty-state">No API keys yet. Click "+ New key" to create one.</div>';
   } else {
     list.innerHTML = activeKeys.map(k => `
-      <div class="key-card" id="key-${k.id}">
-        <div class="key-value">${k.key}</div>
+      <div class="key-card">
+        <div class="key-value">${esc(k.key)}</div>
         <div class="key-meta">
           <span class="key-tier ${k.tier}">${k.tier}</span>
           <span class="key-date">${new Date(k.createdAt).toLocaleDateString()}</span>
           <div class="key-actions">
-            <button class="key-copy" onclick="copyToClipboard('${k.key}', this)">Copy</button>
+            <button class="key-copy" onclick="copyToClipboard('${esc(k.key)}',this)">Copy</button>
             <button class="key-revoke" onclick="handleRevoke(${k.id})">Revoke</button>
           </div>
         </div>
       </div>
     `).join('');
   }
-
-  // Quickstart with first active key
-  const firstKey = activeKeys[0]?.key || 'YOUR_API_KEY';
-  document.getElementById('quickstart-code').innerHTML =
-    `<span class="hl-cmd">curl</span> ${API_BASE}/v1/preview \\
-  <span class="hl-flag">-H</span> <span class="hl-str">"x-api-key: ${firstKey}"</span> \\
-  <span class="hl-flag">-G -d</span> <span class="hl-str">"url=https://github.com"</span>`;
+  renderQs();
 }
 
-// -------------------------------------------------------
-// Key actions
-// -------------------------------------------------------
-async function handleCreateKey() {
-  const btn = document.getElementById('create-key-btn');
-  btn.disabled = true;
-  btn.textContent = 'Creating...';
+// --- Quickstart ---
+const qsTemplates = {
+  curl: (k) => `<span class="hl-fn">curl</span> <span class="hl-url">${API_BASE}/v1/preview</span> \\
+  <span class="hl-key">-H</span> <span class="hl-str">"x-api-key: ${k}"</span> \\
+  <span class="hl-key">-G -d</span> <span class="hl-str">"url=https://github.com"</span>
+
+<span class="hl-cmt"># Screenshot</span>
+<span class="hl-fn">curl</span> <span class="hl-url">${API_BASE}/v1/screenshot</span> \\
+  <span class="hl-key">-H</span> <span class="hl-str">"x-api-key: ${k}"</span> \\
+  <span class="hl-key">-G -d</span> <span class="hl-str">"url=https://github.com&format=png"</span> \\
+  <span class="hl-key">-o</span> screenshot.png`,
+
+  js: (k) => `<span class="hl-cmt">// Link preview</span>
+<span class="hl-kw">const</span> res = <span class="hl-kw">await</span> <span class="hl-fn">fetch</span>(<span class="hl-str">'${API_BASE}/v1/preview?url=https://github.com'</span>, {
+  <span class="hl-key">headers</span>: { <span class="hl-str">'x-api-key'</span>: <span class="hl-str">'${k}'</span> }
+});
+<span class="hl-kw">const</span> { data } = <span class="hl-kw">await</span> res.<span class="hl-fn">json</span>();
+console.<span class="hl-fn">log</span>(data.title, data.description);
+
+<span class="hl-cmt">// Screenshot (base64 JSON)</span>
+<span class="hl-kw">const</span> ss = <span class="hl-kw">await</span> <span class="hl-fn">fetch</span>(<span class="hl-str">'${API_BASE}/v1/screenshot?url=https://github.com&response=json'</span>, {
+  <span class="hl-key">headers</span>: { <span class="hl-str">'x-api-key'</span>: <span class="hl-str">'${k}'</span> }
+});
+<span class="hl-kw">const</span> img = (<span class="hl-kw">await</span> ss.<span class="hl-fn">json</span>()).data.image;`,
+
+  python: (k) => `<span class="hl-kw">import</span> requests
+
+<span class="hl-cmt"># Link preview</span>
+res = requests.<span class="hl-fn">get</span>(
+    <span class="hl-str">"${API_BASE}/v1/preview"</span>,
+    <span class="hl-key">params</span>={<span class="hl-str">"url"</span>: <span class="hl-str">"https://github.com"</span>},
+    <span class="hl-key">headers</span>={<span class="hl-str">"x-api-key"</span>: <span class="hl-str">"${k}"</span>}
+)
+data = res.<span class="hl-fn">json</span>()[<span class="hl-str">"data"</span>]
+<span class="hl-fn">print</span>(data[<span class="hl-str">"title"</span>], data[<span class="hl-str">"description"</span>])
+
+<span class="hl-cmt"># Screenshot</span>
+ss = requests.<span class="hl-fn">get</span>(
+    <span class="hl-str">"${API_BASE}/v1/screenshot"</span>,
+    <span class="hl-key">params</span>={<span class="hl-str">"url"</span>: <span class="hl-str">"https://github.com"</span>, <span class="hl-str">"format"</span>: <span class="hl-str">"png"</span>},
+    <span class="hl-key">headers</span>={<span class="hl-str">"x-api-key"</span>: <span class="hl-str">"${k}"</span>}
+)
+<span class="hl-kw">with</span> <span class="hl-fn">open</span>(<span class="hl-str">"screenshot.png"</span>, <span class="hl-str">"wb"</span>) <span class="hl-kw">as</span> f:
+    f.<span class="hl-fn">write</span>(ss.content)`,
+
+  mcp: (k) => `<span class="hl-cmt">// Add to Claude Desktop config (~/.config/claude/claude_desktop_config.json)</span>
+{
+  <span class="hl-key">"mcpServers"</span>: {
+    <span class="hl-str">"webintel"</span>: {
+      <span class="hl-key">"command"</span>: <span class="hl-str">"npx"</span>,
+      <span class="hl-key">"args"</span>: [<span class="hl-str">"webintel-mcp"</span>],
+      <span class="hl-key">"env"</span>: {
+        <span class="hl-key">"WEBINTEL_API_KEY"</span>: <span class="hl-str">"${k}"</span>
+      }
+    }
+  }
+}
+
+<span class="hl-cmt">// Claude can then use link_preview and take_screenshot as tools</span>`
+};
+
+function qsTab(tab, btn) {
+  currentQsTab = tab;
+  document.querySelectorAll('.qs-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderQs();
+}
+
+function renderQs() {
+  const key = getFirstKey();
+  document.getElementById('qs-code').innerHTML = qsTemplates[currentQsTab](key);
+}
+
+function qsCopy(btn) {
+  const code = document.getElementById('qs-code').textContent;
+  navigator.clipboard.writeText(code);
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy', 1500);
+}
+
+// --- Playground ---
+function pgSetEp(ep, btn) {
+  pgEndpoint = ep;
+  document.querySelectorAll('#pg-ep-row .pg-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function pgRun() {
+  const btn = document.getElementById('pg-run');
+  const resultsEl = document.getElementById('pg-results');
+  let url = document.getElementById('pg-url').value.trim() || 'https://github.com';
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  const key = getFirstKey();
+  if (key === 'YOUR_API_KEY') { alert('Create an API key first.'); return; }
+
+  btn.disabled = true; btn.textContent = 'Running...';
+  resultsEl.className = 'pg-results'; resultsEl.innerHTML = '';
+  const start = performance.now();
 
   try {
-    const res = await fetch(`${API_BASE}/api/dashboard/keys`, {
-      method: 'POST',
-      credentials: 'include',
+    const params = new URLSearchParams({ url });
+    if (pgEndpoint === 'screenshot') { params.set('response', 'json'); params.set('format', 'png'); }
+    const res = await fetch(`${API_BASE}/v1/${pgEndpoint}?${params}`, {
+      headers: { 'x-api-key': key }
     });
+    const elapsed = Math.round(performance.now() - start);
     const json = await res.json();
 
-    if (res.ok) {
-      dashData.keys.unshift(json.data);
-      renderDashboard();
+    if (!res.ok || !json.success) {
+      resultsEl.innerHTML = `<div class="pg-results-header"><span class="pg-badge err">${res.status}</span><span class="pg-time">${elapsed}ms</span></div><div class="pg-json">${esc(json.message || json.error || 'Error')}</div>`;
+    } else if (pgEndpoint === 'screenshot') {
+      resultsEl.innerHTML = `<div class="pg-results-header"><span class="pg-badge ok">200</span><span class="pg-time">${elapsed}ms · ${json.data.width}x${json.data.height}</span></div><img class="pg-img" src="${esc(json.data.image)}" alt="Screenshot">`;
     } else {
-      alert(json.message || 'Could not create key.');
+      resultsEl.innerHTML = `<div class="pg-results-header"><span class="pg-badge ok">200</span><span class="pg-time">${elapsed}ms</span></div><div class="pg-json">${esc(JSON.stringify(json.data, null, 2))}</div>`;
     }
+    resultsEl.className = 'pg-results visible';
   } catch (err) {
-    alert('Network error: ' + err.message);
+    resultsEl.innerHTML = `<div class="pg-results-header"><span class="pg-badge err">ERR</span></div><div class="pg-json">${esc(err.message)}</div>`;
+    resultsEl.className = 'pg-results visible';
   } finally {
-    btn.disabled = false;
-    btn.textContent = '+ New key';
+    btn.disabled = false; btn.textContent = 'Run';
   }
+}
+
+// --- Key actions ---
+async function handleCreateKey() {
+  const btn = document.getElementById('create-key-btn');
+  btn.disabled = true; btn.textContent = 'Creating...';
+  try {
+    const res = await fetch(`${API_BASE}/api/dashboard/keys`, { method: 'POST', credentials: 'include' });
+    const json = await res.json();
+    if (res.ok) { dashData.keys.unshift(json.data); renderDashboard(); }
+    else alert(json.message || 'Could not create key.');
+  } catch (err) { alert('Network error: ' + err.message); }
+  finally { btn.disabled = false; btn.textContent = '+ New key'; }
 }
 
 async function handleRevoke(keyId) {
   if (!confirm('Revoke this key? Any apps using it will stop working.')) return;
-
   try {
-    const res = await fetch(`${API_BASE}/api/dashboard/keys/${keyId}`, {
-      method: 'DELETE',
-      credentials: 'include',
-    });
-
-    if (res.ok) {
-      dashData.keys = dashData.keys.map(k =>
-        k.id === keyId ? { ...k, active: false } : k
-      );
-      renderDashboard();
-    } else {
-      const json = await res.json();
-      alert(json.message || 'Could not revoke key.');
-    }
-  } catch (err) {
-    alert('Network error: ' + err.message);
-  }
+    const res = await fetch(`${API_BASE}/api/dashboard/keys/${keyId}`, { method: 'DELETE', credentials: 'include' });
+    if (res.ok) { dashData.keys = dashData.keys.map(k => k.id === keyId ? { ...k, active: false } : k); renderDashboard(); }
+    else { const json = await res.json(); alert(json.message || 'Could not revoke key.'); }
+  } catch (err) { alert('Network error: ' + err.message); }
 }
 
-// -------------------------------------------------------
-// Billing
-// -------------------------------------------------------
+// --- Billing ---
 async function upgradeToPro() {
   try {
-    const res = await fetch(`${API_BASE}/api/billing/checkout`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ email: dashData.email }),
-    });
+    const res = await fetch(`${API_BASE}/api/billing/checkout`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ email: dashData.email }) });
     const json = await res.json();
-    if (json.url) {
-      window.location.href = json.url;
-    } else {
-      alert(json.message || 'Could not start checkout.');
-    }
-  } catch (err) {
-    alert('Network error: ' + err.message);
-  }
+    if (json.url) window.location.href = json.url;
+    else alert(json.message || 'Could not start checkout.');
+  } catch (err) { alert('Network error: ' + err.message); }
 }
 
 async function openPortal() {
   try {
-    const res = await fetch(`${API_BASE}/api/billing/portal`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ email: dashData.email }),
-    });
+    const res = await fetch(`${API_BASE}/api/billing/portal`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ email: dashData.email }) });
     const json = await res.json();
-    if (json.url) {
-      window.location.href = json.url;
-    } else {
-      alert(json.message || 'Could not open billing portal.');
-    }
-  } catch (err) {
-    alert('Network error: ' + err.message);
-  }
+    if (json.url) window.location.href = json.url;
+    else alert(json.message || 'Could not open billing portal.');
+  } catch (err) { alert('Network error: ' + err.message); }
 }
 
-// -------------------------------------------------------
-// Utils
-// -------------------------------------------------------
+// --- Utils ---
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function copyToClipboard(text, btn) {
   navigator.clipboard.writeText(text);
-  const orig = btn.textContent;
-  btn.textContent = 'Copied!';
+  const orig = btn.textContent; btn.textContent = 'Copied!';
   setTimeout(() => btn.textContent = orig, 1500);
 }
-
 async function handleLogout() {
   await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST', credentials: 'include' });
   window.location.reload();
