@@ -9,7 +9,7 @@ function getResend() {
 }
 
 const FROM = () => process.env.FROM_EMAIL || 'WebIntel <onboarding@resend.dev>';
-const APP_URL = () => process.env.APP_URL || 'https://webintel.dev';
+const APP_URL = () => process.env.APP_URL || 'https://api.webintel.dev';
 
 async function sendMagicLinkEmail(email, token) {
   const client = getResend();

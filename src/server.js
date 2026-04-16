@@ -92,7 +92,7 @@ app.get('/', (req, res) => {
     auth: 'Include your API key via the x-api-key header',
     docs: 'https://webintel.dev/docs',
     pricing: 'https://webintel.dev/#pricing',
-    dashboard: 'https://webintel.dev/dashboard.html'
+    dashboard: 'https://api.webintel.dev/dashboard.html'
   });
 });
 

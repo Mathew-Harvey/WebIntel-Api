@@ -18,7 +18,7 @@ function getStripe() {
 }
 
 const PRICE_ID = () => process.env.STRIPE_PRO_PRICE_ID;
-const APP_URL = () => process.env.APP_URL || 'https://webintel.dev';
+const APP_URL = () => process.env.APP_URL || 'https://api.webintel.dev';
 
 // -------------------------------------------------------
 // POST /api/billing/checkout  — create a Stripe Checkout session
@@ -50,7 +50,7 @@ router.post('/checkout', async (req, res) => {
       mode: 'subscription',
       line_items: [{ price: PRICE_ID(), quantity: 1 }],
       success_url: `${APP_URL()}/dashboard.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${APP_URL()}/#pricing`,
+      cancel_url: 'https://webintel.dev/#pricing',
       metadata: { user_email: email },
     });
 

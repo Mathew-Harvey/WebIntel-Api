@@ -6,7 +6,7 @@ const { sendMagicLinkEmail } = require('../services/email');
 const router = express.Router();
 
 const JWT_SECRET = () => process.env.JWT_SECRET || 'change-me-in-production';
-const APP_URL = () => process.env.APP_URL || 'https://webintel.dev';
+const APP_URL = () => process.env.APP_URL || 'https://api.webintel.dev';
 
 // -------------------------------------------------------
 // POST /api/auth/magic-link  — send a sign-in email
