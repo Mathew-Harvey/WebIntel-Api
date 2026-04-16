@@ -4,11 +4,11 @@ let pool = null;
 
 function getPool() {
   if (!pool) {
+    const connStr = process.env.DATABASE_URL || '';
+    const isLocalDb = connStr.includes('localhost') || connStr.includes('127.0.0.1');
     pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: process.env.NODE_ENV === 'production'
-        ? { rejectUnauthorized: false }
-        : false,
+      connectionString: connStr,
+      ssl: isLocalDb ? false : { rejectUnauthorized: false },
       max: 10,
       idleTimeoutMillis: 30000,
     });
