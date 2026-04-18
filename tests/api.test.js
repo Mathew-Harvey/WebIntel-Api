@@ -633,3 +633,45 @@ test('GET /.well-known/agent-skills/link-preview/SKILL.md returns markdown', asy
   const text = await response.text();
   assert.match(text, /# link-preview/);
 });
+
+// -------------------------------------------------------
+// Web Bot Auth directory
+// -------------------------------------------------------
+
+test('GET /.well-known/http-message-signatures-directory returns a signed Ed25519 JWKS', async () => {
+  const response = await fetch(`${baseUrl}/.well-known/http-message-signatures-directory`);
+  assert.equal(response.status, 200);
+
+  const ct = response.headers.get('content-type') || '';
+  assert.match(ct, /application\/http-message-signatures-directory\+json/);
+
+  const sigInput = response.headers.get('signature-input') || '';
+  const signature = response.headers.get('signature') || '';
+  assert.match(sigInput, /tag="http-message-signatures-directory"/);
+  assert.match(sigInput, /keyid="/);
+  assert.match(sigInput, /created=\d+/);
+  assert.match(sigInput, /expires=\d+/);
+  assert.match(signature, /^sig1=:[A-Za-z0-9+/=]+:$/);
+
+  const body = JSON.parse(await response.text());
+  assert.ok(Array.isArray(body.keys));
+  assert.ok(body.keys.length >= 1);
+  const jwk = body.keys[0];
+  assert.equal(jwk.kty, 'OKP');
+  assert.equal(jwk.crv, 'Ed25519');
+  assert.ok(typeof jwk.x === 'string' && jwk.x.length > 0);
+});
+
+// -------------------------------------------------------
+// WebMCP bootstrap script
+// -------------------------------------------------------
+
+test('GET /webmcp.js returns the WebMCP bootstrap with provideContext call', async () => {
+  const response = await fetch(`${baseUrl}/webmcp.js`);
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type') || '', /javascript/);
+  const body = await response.text();
+  assert.match(body, /navigator\.modelContext\.provideContext/);
+  assert.match(body, /link_preview/);
+  assert.match(body, /take_screenshot/);
+});
