@@ -32,6 +32,7 @@ const signupRoutes = require('./routes/signup');
 const billingRoutes = require('./routes/billing');
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
+const wellKnownRoutes = require('./routes/wellKnown');
 const { initDB } = require('./db');
 const { closeBrowser } = require('./services/screenshot');
 
@@ -62,38 +63,120 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// --- Static files (landing page + dashboard) ---
-app.use(express.static(path.join(__dirname, '..', 'public'), { index: false }));
+// --- Agent-readiness discovery (.well-known/*) ---
+app.use('/.well-known', wellKnownRoutes);
+
+// --- Static files (robots.txt, sitemap.xml, openapi.json, dashboard, skills) ---
+app.use(express.static(path.join(__dirname, '..', 'public'), {
+  index: false,
+  extensions: ['html'],
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.md')) res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    if (filePath.endsWith('robots.txt')) res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  }
+}));
 
 // --- Public routes (no auth) ---
 
+// Homepage — advertises discovery endpoints via Link headers (RFC 8288) and
+// supports Markdown content negotiation for AI agents.
+function setDiscoveryLinkHeaders(res) {
+  res.setHeader(
+    'Link',
+    [
+      '</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
+      '</openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json"',
+      '<https://webintel.dev/docs>; rel="service-doc"; type="text/html"',
+      '</.well-known/mcp/server-card.json>; rel="mcp-server"; type="application/json"',
+      '</.well-known/agent-skills/index.json>; rel="agent-skills"; type="application/json"',
+      '</.well-known/oauth-protected-resource>; rel="oauth-protected-resource"; type="application/json"',
+      '</health>; rel="status"; type="application/json"'
+    ].join(', ')
+  );
+  res.setHeader('Vary', 'Accept');
+}
+
+const ROOT_INFO = {
+  name: 'WebIntel API',
+  version: '1.0.0',
+  description: 'Link Preview & Screenshot API for developers and LLMs',
+  endpoints: {
+    preview: {
+      method: 'GET',
+      path: '/v1/preview?url={url}',
+      description: 'Extract Open Graph, Twitter Card, and meta data from any URL'
+    },
+    screenshot: {
+      method: 'GET',
+      path: '/v1/screenshot?url={url}',
+      description: 'Capture a screenshot of any URL',
+      params: 'width, height, format, quality, fullPage, darkMode, delay, response'
+    }
+  },
+  auth: 'Include your API key via the x-api-key header',
+  docs: 'https://webintel.dev/docs',
+  pricing: 'https://webintel.dev/#pricing',
+  dashboard: 'https://api.webintel.dev/dashboard.html',
+  discovery: {
+    apiCatalog: '/.well-known/api-catalog',
+    openapi: '/openapi.json',
+    mcpServerCard: '/.well-known/mcp/server-card.json',
+    agentSkills: '/.well-known/agent-skills/index.json',
+    oauthProtectedResource: '/.well-known/oauth-protected-resource'
+  }
+};
+
+function rootAsMarkdown() {
+  return `# WebIntel API
+
+Link Preview & Screenshot API for developers and LLMs.
+
+## Endpoints
+
+- \`GET /v1/preview?url={url}\` — Extract Open Graph / Twitter Card / meta data.
+- \`GET /v1/screenshot?url={url}\` — Capture a screenshot (png/jpeg/webp).
+- \`GET /health\` — Service health.
+
+## Authentication
+
+Include your API key via the \`x-api-key\` request header.
+Sign up free at https://api.webintel.dev/api/signup.
+
+## Discovery
+
+- API catalog: \`/.well-known/api-catalog\` (RFC 9727)
+- OpenAPI: \`/openapi.json\`
+- MCP server card: \`/.well-known/mcp/server-card.json\`
+- Agent skills: \`/.well-known/agent-skills/index.json\`
+- OAuth protected resource: \`/.well-known/oauth-protected-resource\`
+
+## Links
+
+- Docs: https://webintel.dev/docs
+- Pricing: https://webintel.dev/#pricing
+- Dashboard: https://api.webintel.dev/dashboard.html
+`;
+}
+
 app.get('/', (req, res) => {
-  const acceptsHtml = (req.headers.accept || '').includes('text/html');
-  if (acceptsHtml) {
+  setDiscoveryLinkHeaders(res);
+
+  const accept = (req.headers.accept || '').toLowerCase();
+  const wantsMarkdown = accept.includes('text/markdown');
+  const wantsHtml = accept.includes('text/html');
+  const wantsJson = accept.includes('application/json');
+
+  if (wantsMarkdown) {
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    return res.send(rootAsMarkdown());
+  }
+
+  // Browsers go to the marketing site; agents and JSON clients get JSON info.
+  if (wantsHtml && !wantsJson) {
     return res.redirect(301, 'https://webintel.dev');
   }
-  res.json({
-    name: 'WebIntel API',
-    version: '1.0.0',
-    description: 'Link Preview & Screenshot API for developers and LLMs',
-    endpoints: {
-      preview: {
-        method: 'GET',
-        path: '/v1/preview?url={url}',
-        description: 'Extract Open Graph, Twitter Card, and meta data from any URL'
-      },
-      screenshot: {
-        method: 'GET',
-        path: '/v1/screenshot?url={url}',
-        description: 'Capture a screenshot of any URL',
-        params: 'width, height, format, quality, fullPage, darkMode, delay, response'
-      }
-    },
-    auth: 'Include your API key via the x-api-key header',
-    docs: 'https://webintel.dev/docs',
-    pricing: 'https://webintel.dev/#pricing',
-    dashboard: 'https://api.webintel.dev/dashboard.html'
-  });
+
+  res.json(ROOT_INFO);
 });
 
 app.get('/health', (req, res) => {

@@ -199,6 +199,46 @@ webintel-api/
 └── .env.example
 ```
 
+## Agent-readiness
+
+WebIntel publishes the discovery resources AI agents look for. They are all
+served from `api.webintel.dev` (and can be mirrored or proxied from
+`webintel.dev` — see note below).
+
+| Path                                              | Purpose                                      |
+| ------------------------------------------------- | -------------------------------------------- |
+| `/robots.txt`                                     | Crawl rules + AI bot rules + Content-Signal  |
+| `/sitemap.xml`                                    | Canonical URL index                          |
+| `/openapi.json`                                   | OpenAPI 3.1 service description              |
+| `/.well-known/api-catalog`                        | RFC 9727 linkset for the API                 |
+| `/.well-known/oauth-protected-resource`           | RFC 9728 resource metadata                   |
+| `/.well-known/oauth-authorization-server`         | RFC 8414 issuer metadata                     |
+| `/.well-known/mcp/server-card.json`               | SEP-1649 MCP server card                     |
+| `/.well-known/agent-skills/index.json`            | Agent Skills Discovery RFC v0.2.0 index      |
+| `/.well-known/agent-skills/<skill>/SKILL.md`      | Individual skill definitions                 |
+
+The homepage (`/`) also:
+
+- Sends RFC 8288 `Link` headers pointing at the above resources.
+- Supports Markdown content negotiation — `Accept: text/markdown` returns a
+  plain-text summary of the API.
+
+The dashboard page exposes `link_preview` and `take_screenshot` via the
+experimental [WebMCP](https://webmachinelearning.github.io/webmcp/) API
+(`navigator.modelContext.provideContext`).
+
+### Mirroring to webintel.dev
+
+The `isitagentready.com` scanner checks the bare apex (e.g. `webintel.dev`).
+To pick up the same signals there, either:
+
+1. Configure the Cloudflare CDN in front of `webintel.dev` to proxy
+   `/robots.txt`, `/sitemap.xml`, `/openapi.json`, and `/.well-known/*` to
+   `api.webintel.dev`, **or**
+2. Copy `public/robots.txt`, `public/sitemap.xml`, `public/openapi.json`, and
+   `public/agent-skills/` into the landing-page repo and add the well-known
+   routes there too.
+
 ## Roadmap
 
 - [ ] PostgreSQL key management + Stripe billing

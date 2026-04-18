@@ -1,0 +1,187 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "WebIntel API",
+    "version": "1.0.0",
+    "description": "Link Preview & Screenshot REST API for developers and LLMs. Extract Open Graph metadata and capture screenshots from any public URL.",
+    "contact": {
+      "name": "WebIntel",
+      "url": "https://webintel.dev",
+      "email": "hello@webintel.dev"
+    },
+    "license": {
+      "name": "MIT",
+      "identifier": "MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.webintel.dev",
+      "description": "Production"
+    }
+  ],
+  "security": [
+    { "ApiKeyHeader": [] },
+    { "ApiKeyQuery": [] }
+  ],
+  "paths": {
+    "/v1/preview": {
+      "get": {
+        "operationId": "linkPreview",
+        "summary": "Extract Open Graph / meta data for a URL",
+        "tags": ["Preview"],
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "uri" },
+            "description": "Fully qualified URL (must include scheme) to extract metadata from."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata extracted successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PreviewResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "429": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/screenshot": {
+      "get": {
+        "operationId": "takeScreenshot",
+        "summary": "Capture a screenshot of a URL",
+        "tags": ["Screenshot"],
+        "parameters": [
+          { "name": "url", "in": "query", "required": true, "schema": { "type": "string", "format": "uri" } },
+          { "name": "width", "in": "query", "schema": { "type": "integer", "default": 1280, "maximum": 1920 } },
+          { "name": "height", "in": "query", "schema": { "type": "integer", "default": 800, "maximum": 1080 } },
+          { "name": "format", "in": "query", "schema": { "type": "string", "enum": ["png", "jpeg", "webp"], "default": "png" } },
+          { "name": "quality", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 80 } },
+          { "name": "fullPage", "in": "query", "schema": { "type": "boolean", "default": false } },
+          { "name": "darkMode", "in": "query", "schema": { "type": "boolean", "default": false } },
+          { "name": "delay", "in": "query", "schema": { "type": "integer", "minimum": 0, "maximum": 5000, "default": 0 } },
+          { "name": "response", "in": "query", "schema": { "type": "string", "enum": ["image", "json"], "default": "image" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Screenshot returned as image or JSON",
+            "content": {
+              "image/png": { "schema": { "type": "string", "format": "binary" } },
+              "image/jpeg": { "schema": { "type": "string", "format": "binary" } },
+              "image/webp": { "schema": { "type": "string", "format": "binary" } },
+              "application/json": { "schema": { "$ref": "#/components/schemas/ScreenshotJsonResponse" } }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "429": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health",
+        "summary": "Service health check",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "uptime": { "type": "integer" },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyHeader": { "type": "apiKey", "in": "header", "name": "x-api-key" },
+      "ApiKeyQuery": { "type": "apiKey", "in": "query", "name": "api_key" }
+    },
+    "responses": {
+      "Error": {
+        "description": "Error response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": { "type": "string" },
+                "message": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "PreviewResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "url": { "type": "string" },
+              "title": { "type": "string", "nullable": true },
+              "description": { "type": "string", "nullable": true },
+              "image": { "type": "string", "nullable": true },
+              "favicon": { "type": "string", "nullable": true },
+              "siteName": { "type": "string", "nullable": true },
+              "type": { "type": "string", "nullable": true },
+              "language": { "type": "string", "nullable": true },
+              "themeColor": { "type": "string", "nullable": true },
+              "canonical": { "type": "string", "nullable": true },
+              "author": { "type": "string", "nullable": true },
+              "published": { "type": "string", "nullable": true },
+              "twitter": {
+                "type": "object",
+                "properties": {
+                  "card": { "type": "string", "nullable": true },
+                  "site": { "type": "string", "nullable": true },
+                  "creator": { "type": "string", "nullable": true }
+                }
+              },
+              "responseTime": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "ScreenshotJsonResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "image": { "type": "string", "description": "base64 data URI" },
+              "title": { "type": "string" },
+              "width": { "type": "integer" },
+              "height": { "type": "integer" },
+              "format": { "type": "string" },
+              "sizeBytes": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -534,3 +534,102 @@ test('Preview response includes expected metadata fields', async () => {
     assert.ok(field in data, `Missing field: ${field}`);
   }
 });
+
+// -------------------------------------------------------
+// Agent-readiness discovery endpoints
+// -------------------------------------------------------
+
+test('GET /robots.txt is served with text/plain and AI rules', async () => {
+  const { response, body } = await jsonRequest('/robots.txt');
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type') || '', /text\/plain/);
+  assert.match(body, /User-agent:\s*GPTBot/i);
+  assert.match(body, /User-agent:\s*Claude-Web/i);
+  assert.match(body, /Content-Signal:/);
+  assert.match(body, /Sitemap:/);
+});
+
+test('GET /sitemap.xml is served as XML', async () => {
+  const { response, body } = await jsonRequest('/sitemap.xml');
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type') || '', /xml/);
+  assert.match(body, /<urlset/);
+});
+
+test('GET /openapi.json returns a valid OpenAPI document', async () => {
+  const { response, body } = await jsonRequest('/openapi.json');
+  assert.equal(response.status, 200);
+  assert.ok(body.openapi);
+  assert.ok(body.paths['/v1/preview']);
+  assert.ok(body.paths['/v1/screenshot']);
+});
+
+test('GET / sets RFC 8288 Link headers pointing at discovery resources', async () => {
+  const { response } = await jsonRequest('/', { headers: { Accept: 'application/json' } });
+  const link = response.headers.get('link') || '';
+  assert.match(link, /rel="api-catalog"/);
+  assert.match(link, /rel="service-desc"/);
+  assert.match(link, /rel="mcp-server"/);
+  assert.match(link, /rel="agent-skills"/);
+});
+
+test('GET / with Accept: text/markdown returns markdown', async () => {
+  const response = await fetch(`${baseUrl}/`, { headers: { Accept: 'text/markdown' } });
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type') || '', /text\/markdown/);
+  const text = await response.text();
+  assert.match(text, /^# WebIntel API/);
+});
+
+test('GET /.well-known/api-catalog returns linkset JSON', async () => {
+  const response = await fetch(`${baseUrl}/.well-known/api-catalog`);
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type') || '', /application\/linkset\+json/);
+  const body = JSON.parse(await response.text());
+  assert.ok(Array.isArray(body.linkset));
+  assert.ok(body.linkset[0].anchor);
+  assert.ok(body.linkset[0]['service-desc']);
+});
+
+test('GET /.well-known/oauth-protected-resource returns resource metadata', async () => {
+  const { response, body } = await jsonRequest('/.well-known/oauth-protected-resource');
+  assert.equal(response.status, 200);
+  assert.ok(body.resource);
+  assert.ok(Array.isArray(body.authorization_servers));
+});
+
+test('GET /.well-known/oauth-authorization-server returns issuer metadata', async () => {
+  const { response, body } = await jsonRequest('/.well-known/oauth-authorization-server');
+  assert.equal(response.status, 200);
+  assert.ok(body.issuer);
+  assert.ok(body.token_endpoint);
+});
+
+test('GET /.well-known/mcp/server-card.json describes WebIntel tools', async () => {
+  const { response, body } = await jsonRequest('/.well-known/mcp/server-card.json');
+  assert.equal(response.status, 200);
+  assert.equal(body.serverInfo.name, 'webintel');
+  const toolNames = (body.tools || []).map(t => t.name);
+  assert.ok(toolNames.includes('link_preview'));
+  assert.ok(toolNames.includes('take_screenshot'));
+});
+
+test('GET /.well-known/agent-skills/index.json lists skills with sha256 digests', async () => {
+  const { response, body } = await jsonRequest('/.well-known/agent-skills/index.json');
+  assert.equal(response.status, 200);
+  assert.ok(Array.isArray(body.skills));
+  assert.ok(body.skills.length >= 2);
+  for (const skill of body.skills) {
+    assert.ok(skill.name);
+    assert.ok(skill.url);
+    assert.match(skill.sha256 || '', /^sha256-/);
+  }
+});
+
+test('GET /.well-known/agent-skills/link-preview/SKILL.md returns markdown', async () => {
+  const response = await fetch(`${baseUrl}/.well-known/agent-skills/link-preview/SKILL.md`);
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type') || '', /text\/markdown/);
+  const text = await response.text();
+  assert.match(text, /# link-preview/);
+});
