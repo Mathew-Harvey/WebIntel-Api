@@ -205,17 +205,19 @@ WebIntel publishes the discovery resources AI agents look for. They are all
 served from `api.webintel.dev` (and can be mirrored or proxied from
 `webintel.dev` — see note below).
 
-| Path                                              | Purpose                                      |
-| ------------------------------------------------- | -------------------------------------------- |
-| `/robots.txt`                                     | Crawl rules + AI bot rules + Content-Signal  |
-| `/sitemap.xml`                                    | Canonical URL index                          |
-| `/openapi.json`                                   | OpenAPI 3.1 service description              |
-| `/.well-known/api-catalog`                        | RFC 9727 linkset for the API                 |
-| `/.well-known/oauth-protected-resource`           | RFC 9728 resource metadata                   |
-| `/.well-known/oauth-authorization-server`         | RFC 8414 issuer metadata                     |
-| `/.well-known/mcp/server-card.json`               | SEP-1649 MCP server card                     |
-| `/.well-known/agent-skills/index.json`            | Agent Skills Discovery RFC v0.2.0 index      |
-| `/.well-known/agent-skills/<skill>/SKILL.md`      | Individual skill definitions                 |
+| Path                                                      | Purpose                                      |
+| --------------------------------------------------------- | -------------------------------------------- |
+| `/robots.txt`                                             | Crawl rules + AI bot rules + Content-Signal  |
+| `/sitemap.xml`                                            | Canonical URL index                          |
+| `/openapi.json`                                           | OpenAPI 3.1 service description              |
+| `/.well-known/api-catalog`                                | RFC 9727 linkset for the API                 |
+| `/.well-known/oauth-protected-resource`                   | RFC 9728 resource metadata                   |
+| `/.well-known/oauth-authorization-server`                 | RFC 8414 issuer metadata                     |
+| `/.well-known/mcp/server-card.json`                       | SEP-1649 MCP server card                     |
+| `/.well-known/agent-skills/index.json`                    | Agent Skills Discovery RFC v0.2.0 index      |
+| `/.well-known/agent-skills/<skill>/SKILL.md`              | Individual skill definitions                 |
+| `/.well-known/http-message-signatures-directory`          | Web Bot Auth Ed25519 JWKS (RFC 9421 signed)  |
+| `/webmcp.js`                                              | Drop-in WebMCP bootstrap for the landing page|
 
 The homepage (`/`) also:
 
@@ -226,6 +228,35 @@ The homepage (`/`) also:
 The dashboard page exposes `link_preview` and `take_screenshot` via the
 experimental [WebMCP](https://webmachinelearning.github.io/webmcp/) API
 (`navigator.modelContext.provideContext`).
+
+`public/webmcp.js` is the standalone bootstrap — drop this into the landing
+page and any WebMCP-capable browser will see the tools:
+
+```html
+<script src="https://api.webintel.dev/webmcp.js"
+        data-api-base="https://api.webintel.dev"></script>
+```
+
+### Web Bot Auth key
+
+`/.well-known/http-message-signatures-directory` publishes an Ed25519 JWKS
+and signs its response per [RFC 9421](https://www.rfc-editor.org/rfc/rfc9421)
+with `tag="http-message-signatures-directory"`.
+
+For a stable key across restarts, set:
+
+```
+WEB_BOT_AUTH_ED25519_PRIVATE_KEY_PEM=<PKCS#8 PEM>
+```
+
+Generate one with:
+
+```
+openssl genpkey -algorithm ED25519 -out webintel-webbotauth.pem
+```
+
+If unset, an ephemeral key is generated on boot (dev only — the directory's
+`keyid` will change on every restart).
 
 ### Mirroring to webintel.dev
 

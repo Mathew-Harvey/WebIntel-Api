@@ -18,6 +18,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const webBotAuth = require('../services/webBotAuth');
 
 const SITE_URL = process.env.SITE_URL || 'https://webintel.dev';
 const API_URL = process.env.API_URL || 'https://api.webintel.dev';
@@ -109,6 +110,20 @@ router.get('/oauth-authorization-server', (req, res) => {
 // Empty JWKS so clients that fetch it don't 404.
 router.get('/jwks.json', (req, res) => {
   res.type('application/json').json({ keys: [] });
+});
+
+// --- Web Bot Auth directory (HTTP Message Signatures) -----------------------
+// https://datatracker.ietf.org/wg/webbotauth/about/
+router.get('/http-message-signatures-directory', (req, res) => {
+  const authority = req.headers.host || new URL(API_URL).host;
+  const { signatureInput, signature } = webBotAuth.signDirectoryResponse({ authority });
+
+  res.setHeader('Content-Type', 'application/http-message-signatures-directory+json');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('Signature-Input', signatureInput);
+  res.setHeader('Signature', signature);
+
+  res.send(JSON.stringify({ keys: [webBotAuth.getJwk()] }));
 });
 
 // --- MCP Server Card (SEP-1649) ---------------------------------------------
