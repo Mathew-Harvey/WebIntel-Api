@@ -499,6 +499,58 @@ async function handleLogout() {
   await fetch(`${API_BASE}/api/auth/logout`, { method: 'POST', credentials: 'include' });
   window.location.reload();
 }
+
+// --- WebMCP: expose WebIntel tools to AI agents loaded in the browser ---
+// https://webmachinelearning.github.io/webmcp/
+if (typeof navigator !== 'undefined' && navigator.modelContext && typeof navigator.modelContext.provideContext === 'function') {
+  try {
+    navigator.modelContext.provideContext({
+      tools: [
+        {
+          name: 'link_preview',
+          description: 'Extract Open Graph / Twitter Card / meta data for a URL using WebIntel.',
+          inputSchema: {
+            type: 'object',
+            properties: { url: { type: 'string', description: 'Fully qualified URL to preview.' } },
+            required: ['url']
+          },
+          async execute({ url }) {
+            const key = (document.getElementById('api-key-value')?.textContent || '').trim();
+            const res = await fetch(`${API_BASE}/v1/preview?url=${encodeURIComponent(url)}`, {
+              headers: key ? { 'x-api-key': key } : {}
+            });
+            return await res.json();
+          }
+        },
+        {
+          name: 'take_screenshot',
+          description: 'Capture a screenshot of a URL and return base64 + page metadata.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              url: { type: 'string' },
+              width: { type: 'integer' },
+              height: { type: 'integer' },
+              fullPage: { type: 'boolean' },
+              darkMode: { type: 'boolean' }
+            },
+            required: ['url']
+          },
+          async execute(args) {
+            const key = (document.getElementById('api-key-value')?.textContent || '').trim();
+            const params = new URLSearchParams({ ...args, response: 'json' });
+            const res = await fetch(`${API_BASE}/v1/screenshot?${params}`, {
+              headers: key ? { 'x-api-key': key } : {}
+            });
+            return await res.json();
+          }
+        }
+      ]
+    });
+  } catch (err) {
+    console.warn('[webmcp] provideContext failed:', err);
+  }
+}
 </script>
 </body>
 </html>
